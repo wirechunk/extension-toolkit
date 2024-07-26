@@ -12,7 +12,9 @@ jobs:
         with:
           node-version-file: typescript/.nvmrc
       - run: npm ci --ignore-scripts
+        working-directory: typescript
       - run: npm run typecheck-src
+        working-directory: typescript
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -22,4 +24,6 @@ jobs:
         with:
           node-version-file: typescript/.nvmrc
       - run: npm ci --ignore-scripts
+        working-directory: typescript
       - run: npm run build
+        working-directory: typescript

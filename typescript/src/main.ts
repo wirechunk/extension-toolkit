@@ -1,2 +1,2 @@
 export * from './hooks.js';
-export { start } from './start.js';
+export * from './start.js';

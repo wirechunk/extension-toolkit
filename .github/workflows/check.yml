@@ -1,7 +1,6 @@
-name: Check
+name: Code checks
 on:
   - push
-  - pull_request
 jobs:
   typecheck:
     runs-on: ubuntu-latest

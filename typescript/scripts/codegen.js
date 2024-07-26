@@ -1,0 +1,75 @@
+import { lstat, readdir, readFile, writeFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+
+const kebabToPascal = (kebab) =>
+  kebab
+    .split('-')
+    .map((word) => word[0].toUpperCase() + word.slice(1))
+    .join('');
+
+const kebabToCamel = (kebab) =>
+  kebab
+    .split('-')
+    .map((word, index) => (index === 0 ? word : word[0].toUpperCase() + word.slice(1)))
+    .join('');
+
+const hookHandlerTemplate = async (hooksDirPath, hookName) => {
+  const hookNamePascal = kebabToPascal(hookName);
+  const hookNameCamel = kebabToCamel(hookName);
+
+  const imports = `import type { ${hookNamePascal}Value } from '@wirechunk/schemas/hooks/${hookName}/value';
+import type { ${hookNamePascal}StopAction } from '@wirechunk/schemas/hooks/${hookName}/stop-action';
+import ${hookNameCamel}ValueSchema from '@wirechunk/schemas/hooks/${hookName}/value.json' with { type: 'json' };`;
+
+  let description;
+  const descriptionFilePath = `${hooksDirPath}/${hookName}/description.txt`;
+  if (existsSync(descriptionFilePath)) {
+    const descriptionFileStat = await lstat(descriptionFilePath);
+    if (descriptionFileStat.isFile()) {
+      description = (await readFile(descriptionFilePath, 'utf8')).trim();
+    }
+  }
+
+  const handleFn = `/**
+ * Handle the ${hookName} hook.${description ? `\n * ${description}` : ''}
+ */
+export const handle${hookNamePascal} = (
+  handler: HookHandler<${hookNamePascal}Value, ${hookNamePascal}StopAction>,
+): void => registerHookHandler('${hookName}', ${hookNameCamel}ValueSchema, handler);`;
+
+  return {
+    imports,
+    handleFn,
+  };
+};
+
+const hooksFileTemplate = async (hooksDirPath, hookNames) => {
+  const templates = await Promise.all(
+    hookNames.map((hookName) => hookHandlerTemplate(hooksDirPath, hookName)),
+  );
+
+  return `${templates.map((t) => t.imports).join('\n')}
+import { HookHandler, registerHookHandler } from './start.js';
+
+${templates.map((t) => t.handleFn).join('\n')}
+`;
+};
+
+const codegenHooks = async (hooksDirPath) => {
+  const files = await readdir(hooksDirPath);
+  const hookNames = [];
+  for (const file of files) {
+    const filePath = `${hooksDirPath}/${file}`;
+    const stat = await lstat(filePath);
+    if (stat.isDirectory()) {
+      hookNames.push(file);
+    } else {
+      console.error(`Unexpected file in the hooks directory: ${filePath}`);
+    }
+  }
+
+  const fileContents = await hooksFileTemplate(hooksDirPath, hookNames);
+  await writeFile('src/hooks.ts', fileContents);
+};
+
+await codegenHooks('node_modules/@wirechunk/schemas/src/hooks');

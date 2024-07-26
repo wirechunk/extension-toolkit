@@ -1,0 +1,48 @@
+{
+  "name": "@wirechunk/extension-toolkit",
+  "version": "0.0.1-rc1",
+  "description": "Wirechunk extension toolkit",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wirechunk/extension-toolkit.git"
+  },
+  "author": "Wirechunk, Inc.",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wirechunk/extension-toolkit/issues"
+  },
+  "homepage": "https://github.com/wirechunk/extension-toolkit#readme",
+  "publishConfig": {
+    "provenance": true
+  },
+  "files": [
+    "build"
+  ],
+  "exports": {
+    ".": {
+      "import": "./build/main.js",
+      "types": "./build/main.d.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc",
+    "typecheck-src": "tsc --skipLibCheck",
+    "codegen": "npm run codegen:generate && npm run format",
+    "codegen:generate": "node scripts/codegen.js",
+    "format": "prettier --write .",
+    "build": "npm run build:clean && npm run build:output",
+    "build:clean": "rm -rf build",
+    "build:output": "tsc -p tsconfig.build.json"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.11",
+    "prettier": "^3.3.3",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "@wirechunk/schemas": "0.0.1-rc5",
+    "ajv": "^8.17.1",
+    "fastify": "^4.28.1"
+  }
+}

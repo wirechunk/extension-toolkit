@@ -5,14 +5,14 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wirechunk/schemas.git"
+    "url": "git+https://github.com/wirechunk/extension-toolkit.git"
   },
   "author": "Wirechunk, Inc.",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/wirechunk/schemas/issues"
+    "url": "https://github.com/wirechunk/extension-toolkit/issues"
   },
-  "homepage": "https://github.com/wirechunk/schemas#readme",
+  "homepage": "https://github.com/wirechunk/extension-toolkit#readme",
   "publishConfig": {
     "provenance": true
   },

@@ -17,8 +17,8 @@ const hookHandlerTemplate = async (hooksDirPath, hookName) => {
   const hookNamePascal = kebabToPascal(hookName);
   const hookNameCamel = kebabToCamel(hookName);
 
-  const imports = `import type { ${hookNamePascal}Value } from '@wirechunk/schemas/hooks/${hookName}/value';
-import type { ${hookNamePascal}StopAction } from '@wirechunk/schemas/hooks/${hookName}/stop-action';
+  const imports = `import type { ${hookNamePascal}StopAction } from '@wirechunk/schemas/hooks/${hookName}/stop-action';
+import type { ${hookNamePascal}Value } from '@wirechunk/schemas/hooks/${hookName}/value';
 import ${hookNameCamel}ValueSchema from '@wirechunk/schemas/hooks/${hookName}/value.json' with { type: 'json' };`;
 
   let description;
@@ -26,12 +26,19 @@ import ${hookNameCamel}ValueSchema from '@wirechunk/schemas/hooks/${hookName}/va
   if (existsSync(descriptionFilePath)) {
     const descriptionFileStat = await lstat(descriptionFilePath);
     if (descriptionFileStat.isFile()) {
-      description = (await readFile(descriptionFilePath, 'utf8')).trim();
+      const rawDescription = await readFile(descriptionFilePath, 'utf8');
+      description = rawDescription
+        .trim()
+        .split('\n')
+        .map((line) => ` * ${line.trim()}`)
+        .join('\n');
+    } else {
+      console.error(`Unexpected non-file for description at ${descriptionFilePath}`);
     }
   }
 
   const handleFn = `/**
- * Handle the ${hookName} hook.${description ? `\n * ${description}` : ''}
+ * Handle the ${hookName} hook.${description ? `\n${description}` : ''}
  */
 export const handle${hookNamePascal} = (
   handler: HookHandler<${hookNamePascal}Value, ${hookNamePascal}StopAction>,
@@ -45,13 +52,13 @@ export const handle${hookNamePascal} = (
 
 const hooksFileTemplate = async (hooksDirPath, hookNames) => {
   const templates = await Promise.all(
-    hookNames.map((hookName) => hookHandlerTemplate(hooksDirPath, hookName)),
+    hookNames.sort().map((hookName) => hookHandlerTemplate(hooksDirPath, hookName)),
   );
 
   return `${templates.map((t) => t.imports).join('\n')}
 import { HookHandler, registerHookHandler } from './start.js';
 
-${templates.map((t) => t.handleFn).join('\n')}
+${templates.map((t) => t.handleFn).join('\n\n')}
 `;
 };
 

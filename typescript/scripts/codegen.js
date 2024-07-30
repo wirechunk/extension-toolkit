@@ -17,8 +17,14 @@ const hookHandlerTemplate = async (hooksDirPath, hookName) => {
   const hookNamePascal = kebabToPascal(hookName);
   const hookNameCamel = kebabToCamel(hookName);
 
-  const imports = `import type { ${hookNamePascal}StopAction } from '@wirechunk/schemas/hooks/${hookName}/stop-action';
-import type { ${hookNamePascal}Value } from '@wirechunk/schemas/hooks/${hookName}/value';
+  const hasStopValueSchema = existsSync(`${hooksDirPath}/${hookName}/stop-value.json`);
+
+  const imports = `${
+    hasStopValueSchema
+      ? `import type { ${hookNamePascal}StopValue } from '@wirechunk/schemas/hooks/${hookName}/stop-value';
+`
+      : ''
+  }import type { ${hookNamePascal}Value } from '@wirechunk/schemas/hooks/${hookName}/value';
 import ${hookNameCamel}ValueSchema from '@wirechunk/schemas/hooks/${hookName}/value.json' with { type: 'json' };`;
 
   let description;
@@ -41,7 +47,7 @@ import ${hookNameCamel}ValueSchema from '@wirechunk/schemas/hooks/${hookName}/va
  * Handle the ${hookName} hook.${description ? `\n${description}` : ''}
  */
 export const handle${hookNamePascal} = (
-  handler: HookHandler<${hookNamePascal}Value, ${hookNamePascal}StopAction>,
+  handler: HookHandler<${hookNamePascal}Value, ${hasStopValueSchema ? `${hookNamePascal}StopValue` : `${hookNamePascal}Value`}>,
 ): void => registerHookHandler('${hookName}', ${hookNameCamel}ValueSchema, handler);`;
 
   return {

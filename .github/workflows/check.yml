@@ -24,7 +24,9 @@ jobs:
       - run: npm ci --ignore-scripts
         working-directory: typescript
       - run: npm run lint:check
+        working-directory: typescript
       - run: npm run format:check
+        working-directory: typescript
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 5

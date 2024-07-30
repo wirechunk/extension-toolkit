@@ -1,7 +1,6 @@
-import type { FormSubmissionStopAction } from '@wirechunk/schemas/hooks/form-submission/stop-action';
+import type { FormSubmissionStopValue } from '@wirechunk/schemas/hooks/form-submission/stop-value';
 import type { FormSubmissionValue } from '@wirechunk/schemas/hooks/form-submission/value';
 import formSubmissionValueSchema from '@wirechunk/schemas/hooks/form-submission/value.json' with { type: 'json' };
-import type { InitialFormDataStopAction } from '@wirechunk/schemas/hooks/initial-form-data/stop-action';
 import type { InitialFormDataValue } from '@wirechunk/schemas/hooks/initial-form-data/value';
 import initialFormDataValueSchema from '@wirechunk/schemas/hooks/initial-form-data/value.json' with { type: 'json' };
 import { HookHandler, registerHookHandler } from './start.js';
@@ -11,7 +10,7 @@ import { HookHandler, registerHookHandler } from './start.js';
  * This hook is fired before the submission is saved.
  */
 export const handleFormSubmission = (
-  handler: HookHandler<FormSubmissionValue, FormSubmissionStopAction>,
+  handler: HookHandler<FormSubmissionValue, FormSubmissionStopValue>,
 ): void => registerHookHandler('form-submission', formSubmissionValueSchema, handler);
 
 /**
@@ -20,5 +19,5 @@ export const handleFormSubmission = (
  * results depending on the user (if any) who is viewing the form and any data that the user has previously submitted.
  */
 export const handleInitialFormData = (
-  handler: HookHandler<InitialFormDataValue, InitialFormDataStopAction>,
+  handler: HookHandler<InitialFormDataValue, InitialFormDataValue>,
 ): void => registerHookHandler('initial-form-data', initialFormDataValueSchema, handler);

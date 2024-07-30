@@ -48,7 +48,9 @@ import ${hookNameCamel}ValueSchema from '@wirechunk/schemas/hooks/${hookName}/va
  */
 export const handle${hookNamePascal} = (
   handler: HookHandler<${hookNamePascal}Value, ${hasStopValueSchema ? `${hookNamePascal}StopValue` : `${hookNamePascal}Value`}>,
-): void => registerHookHandler('${hookName}', ${hookNameCamel}ValueSchema, handler);`;
+): void => {
+  registerHookHandler('${hookName}', ${hookNameCamel}ValueSchema, handler);
+};`;
 
   return {
     imports,

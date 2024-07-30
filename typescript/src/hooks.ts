@@ -11,7 +11,9 @@ import { HookHandler, registerHookHandler } from './start.js';
  */
 export const handleFormSubmission = (
   handler: HookHandler<FormSubmissionValue, FormSubmissionStopValue>,
-): void => registerHookHandler('form-submission', formSubmissionValueSchema, handler);
+): void => {
+  registerHookHandler('form-submission', formSubmissionValueSchema, handler);
+};
 
 /**
  * Handle the initial-form-data hook.
@@ -20,4 +22,6 @@ export const handleFormSubmission = (
  */
 export const handleInitialFormData = (
   handler: HookHandler<InitialFormDataValue, InitialFormDataValue>,
-): void => registerHookHandler('initial-form-data', initialFormDataValueSchema, handler);
+): void => {
+  registerHookHandler('initial-form-data', initialFormDataValueSchema, handler);
+};

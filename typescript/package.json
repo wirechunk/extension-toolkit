@@ -49,7 +49,7 @@
     "typescript-eslint": "^8.0.0-alpha.60"
   },
   "dependencies": {
-    "@wirechunk/schemas": "0.0.4",
+    "@wirechunk/schemas": "0.0.5",
     "ajv": "^8.17.1",
     "fastify": "^4.28.1"
   }

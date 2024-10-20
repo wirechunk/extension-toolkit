@@ -1,40 +1,147 @@
-import type { BeforeCreateSiteStopValue } from '@wirechunk/schemas/hooks/before-create-site/stop-value';
-import type { BeforeCreateSiteValue } from '@wirechunk/schemas/hooks/before-create-site/value';
-import beforeCreateSiteValueSchema from '@wirechunk/schemas/hooks/before-create-site/value.json' with { type: 'json' };
-import type { BeforeSubmitFormStopValue } from '@wirechunk/schemas/hooks/before-submit-form/stop-value';
-import type { BeforeSubmitFormValue } from '@wirechunk/schemas/hooks/before-submit-form/value';
-import beforeSubmitFormValueSchema from '@wirechunk/schemas/hooks/before-submit-form/value.json' with { type: 'json' };
-import type { InitialFormDataValue } from '@wirechunk/schemas/hooks/initial-form-data/value';
-import initialFormDataValueSchema from '@wirechunk/schemas/hooks/initial-form-data/value.json' with { type: 'json' };
-import { HookHandler, registerHookHandler } from './start.js';
+import type { AuthorizeCreateSiteInput } from '@wirechunk/schemas/hooks/authorize-create-site/input';
+import authorizeCreateSiteInputSchema from '@wirechunk/schemas/hooks/authorize-create-site/input.json' with { type: 'json' };
+import type { AuthorizeCreateSiteResult } from '@wirechunk/schemas/hooks/authorize-create-site/result';
+import authorizeCreateSiteResultSchema from '@wirechunk/schemas/hooks/authorize-create-site/result.json' with { type: 'json' };
+import type { BeforeCreateSiteInput } from '@wirechunk/schemas/hooks/before-create-site/input';
+import beforeCreateSiteInputSchema from '@wirechunk/schemas/hooks/before-create-site/input.json' with { type: 'json' };
+import type { BeforeCreateSiteResult } from '@wirechunk/schemas/hooks/before-create-site/result';
+import beforeCreateSiteResultSchema from '@wirechunk/schemas/hooks/before-create-site/result.json' with { type: 'json' };
+import type { BeforeSubmitFormInput } from '@wirechunk/schemas/hooks/before-submit-form/input';
+import beforeSubmitFormInputSchema from '@wirechunk/schemas/hooks/before-submit-form/input.json' with { type: 'json' };
+import type { BeforeSubmitFormResult } from '@wirechunk/schemas/hooks/before-submit-form/result';
+import beforeSubmitFormResultSchema from '@wirechunk/schemas/hooks/before-submit-form/result.json' with { type: 'json' };
+import type { InitialFormDataInput } from '@wirechunk/schemas/hooks/initial-form-data/input';
+import initialFormDataInputSchema from '@wirechunk/schemas/hooks/initial-form-data/input.json' with { type: 'json' };
+import type { InitialFormDataResult } from '@wirechunk/schemas/hooks/initial-form-data/result';
+import initialFormDataResultSchema from '@wirechunk/schemas/hooks/initial-form-data/result.json' with { type: 'json' };
+import { server } from './start.js';
 
 /**
- * Handle the before-create-site hook.
+ * Register a handler for the authorize-create-site hook.
+ * This hook is used to check if a user is permitted to create a site.
+ * It is fired before the before-create-site hook.
+ * This function should be called before starting the server.
+ */
+export const handleAuthorizeCreateSite = (
+  handler: (
+    input: AuthorizeCreateSiteInput,
+  ) => Promise<AuthorizeCreateSiteResult | null> | AuthorizeCreateSiteResult | null,
+): void => {
+  server.post<{
+    Body: AuthorizeCreateSiteInput;
+    Reply: AuthorizeCreateSiteResult;
+  }>(
+    '/hooks/authorize-create-site',
+    {
+      schema: {
+        body: authorizeCreateSiteInputSchema,
+        response: authorizeCreateSiteResultSchema,
+      },
+    },
+    async ({ body }, reply) => {
+      const res = await handler(body);
+      if (!res) {
+        reply.statusCode = 204;
+        return;
+      }
+      return res;
+    },
+  );
+};
+
+/**
+ * Register a handler for the before-create-site hook.
  * This hook is fired before a site is created. It can be used to modify the input data or to prevent the request with an error message.
+ * This function should be called before starting the server.
  */
 export const handleBeforeCreateSite = (
-  handler: HookHandler<BeforeCreateSiteValue, BeforeCreateSiteStopValue>,
+  handler: (
+    input: BeforeCreateSiteInput,
+  ) => Promise<BeforeCreateSiteResult | null> | BeforeCreateSiteResult | null,
 ): void => {
-  registerHookHandler('before-create-site', beforeCreateSiteValueSchema, handler);
+  server.post<{
+    Body: BeforeCreateSiteInput;
+    Reply: BeforeCreateSiteResult;
+  }>(
+    '/hooks/before-create-site',
+    {
+      schema: {
+        body: beforeCreateSiteInputSchema,
+        response: beforeCreateSiteResultSchema,
+      },
+    },
+    async ({ body }, reply) => {
+      const res = await handler(body);
+      if (!res) {
+        reply.statusCode = 204;
+        return;
+      }
+      return res;
+    },
+  );
 };
 
 /**
- * Handle the before-submit-form hook.
+ * Register a handler for the before-submit-form hook.
  * This hook is fired before a form submission is saved.
+ * This function should be called before starting the server.
  */
 export const handleBeforeSubmitForm = (
-  handler: HookHandler<BeforeSubmitFormValue, BeforeSubmitFormStopValue>,
+  handler: (
+    input: BeforeSubmitFormInput,
+  ) => Promise<BeforeSubmitFormResult | null> | BeforeSubmitFormResult | null,
 ): void => {
-  registerHookHandler('before-submit-form', beforeSubmitFormValueSchema, handler);
+  server.post<{
+    Body: BeforeSubmitFormInput;
+    Reply: BeforeSubmitFormResult;
+  }>(
+    '/hooks/before-submit-form',
+    {
+      schema: {
+        body: beforeSubmitFormInputSchema,
+        response: beforeSubmitFormResultSchema,
+      },
+    },
+    async ({ body }, reply) => {
+      const res = await handler(body);
+      if (!res) {
+        reply.statusCode = 204;
+        return;
+      }
+      return res;
+    },
+  );
 };
 
 /**
- * Handle the initial-form-data hook.
+ * Register a handler for the initial-form-data hook.
  * This hook allows customizing the data with which a form is initialized. For example, it can return different
  * results depending on the user (if any) who is viewing the form and any data that the user has previously submitted.
+ * This function should be called before starting the server.
  */
 export const handleInitialFormData = (
-  handler: HookHandler<InitialFormDataValue, InitialFormDataValue>,
+  handler: (
+    input: InitialFormDataInput,
+  ) => Promise<InitialFormDataResult | null> | InitialFormDataResult | null,
 ): void => {
-  registerHookHandler('initial-form-data', initialFormDataValueSchema, handler);
+  server.post<{
+    Body: InitialFormDataInput;
+    Reply: InitialFormDataResult;
+  }>(
+    '/hooks/initial-form-data',
+    {
+      schema: {
+        body: initialFormDataInputSchema,
+        response: initialFormDataResultSchema,
+      },
+    },
+    async ({ body }, reply) => {
+      const res = await handler(body);
+      if (!res) {
+        reply.statusCode = 204;
+        return;
+      }
+      return res;
+    },
+  );
 };

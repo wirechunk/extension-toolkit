@@ -8,11 +8,10 @@ import fastify, {
 import beforeSubmitFormValueSchema from '@wirechunk/schemas/hooks/before-submit-form/value.json' with { type: 'json' };
 import contextDataSchema from '@wirechunk/schemas/context-data/context-data.json' with { type: 'json' };
 import { Ajv2020 as Ajv } from 'ajv/dist/2020.js';
-import type { HookResult } from '@wirechunk/schemas/hook-result';
-import type { Schema } from 'ajv';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
+import { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts';
 
 const ajv = new Ajv({
   strict: true,
@@ -67,9 +66,9 @@ if (typeof extensionName !== 'string') {
   process.exit(1);
 }
 
-const server = fastify({
+export const server = fastify({
   logger: true,
-});
+}).withTypeProvider<JsonSchemaToTsProvider>();
 
 ajv.addSchema([contextDataSchema, beforeSubmitFormValueSchema]);
 
@@ -94,44 +93,6 @@ export const start = async () => {
     server.log.error(err);
     process.exit(1);
   }
-};
-
-/**
- * A hook handler the specified event and returns either a result to modify the event or null to
- * indicate that it is ignoring the event (i.e., no effect).
- */
-export type HookHandler<TValue, TStopAction> = (
-  value: TValue,
-) => Promise<HookResult<TValue, TStopAction> | null> | null;
-
-/**
- * Registers a handler function for the specified hook.
- * This function should be called before starting the server.
- */
-export const registerHookHandler = <TValue, TStopAction>(
-  hookName: string,
-  valueSchema: Schema,
-  handler: HookHandler<TValue, TStopAction>,
-): void => {
-  server.post<{
-    Body: TValue;
-    Reply: HookResult<TValue, TStopAction>;
-  }>(
-    `/hooks/${hookName}`,
-    {
-      schema: {
-        body: valueSchema,
-      },
-    },
-    async ({ body }, reply) => {
-      const res = await handler(body as never);
-      if (!res) {
-        reply.statusCode = 204;
-        return;
-      }
-      return res;
-    },
-  );
 };
 
 /**

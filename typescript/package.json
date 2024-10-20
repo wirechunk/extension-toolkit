@@ -29,7 +29,7 @@
     "typecheck": "tsc",
     "typecheck-src": "tsc --skipLibCheck",
     "codegen": "npm run codegen:generate && npm run format",
-    "codegen:generate": "node scripts/codegen.js",
+    "codegen:generate": "node --experimental-transform-types scripts/codegen.ts",
     "lint": "eslint --fix .",
     "lint:check": "eslint .",
     "format": "prettier --write .",

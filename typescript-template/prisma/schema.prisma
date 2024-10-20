@@ -1,0 +1,70 @@
+// This is your Prisma schema file. Learn more in the docs: https://www.prisma.io/docs/orm
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["relationJoins", "tracing", "views"]
+  binaryTargets   = ["native", "debian-openssl-3.0.x", "linux-arm64-openssl-3.0.x"]
+  extensions      = [btree_gin, pg_trgm]
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+// Core schema
+
+// A core type. This type cannot be modified in the database.
+enum UserStatus {
+  Pending
+  Active
+  ExpiredInactive
+  Deactivated
+}
+
+// A core table. This view cannot be modified in the database. However, Prisma models can have
+// relations to rows in this table.
+view User {
+  id            String     @id @db.Uuid
+  firstName     String
+  lastName      String
+  email         String     @unique
+  emailVerified Boolean
+  orgId         String     @db.Uuid
+  orgPrimary    Boolean
+  role          String
+  status        UserStatus
+  expiresAt     DateTime?
+  createdAt     DateTime
+
+  org Org? @relation(fields: [orgId], references: [id])
+
+  @@map("Users")
+}
+
+// A core table. This view cannot be modified in the database. However, Prisma models can have
+// relations to rows in this table.
+view Org {
+  id        String   @id @db.Uuid
+  name      String?
+  createdAt DateTime
+
+  sites Site[]
+  users User[]
+
+  @@map("Orgs")
+}
+
+// A core table. This view cannot be modified in the database. However, Prisma models can have
+// relations to rows in this table.
+view Site {
+  id        String   @id @db.Uuid
+  domain    String   @unique
+  orgId     String?  @db.Uuid
+  name      String?
+  createdAt DateTime
+
+  org Org? @relation(fields: [orgId], references: [id])
+
+  @@map("Sites")
+}

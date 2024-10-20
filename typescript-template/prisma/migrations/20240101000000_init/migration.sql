@@ -35,7 +35,7 @@ select
   "id",
   "name",
   "createdAt"
-from public."Organizations";
+from public."Orgs";
 
 drop view if exists "Sites";
 

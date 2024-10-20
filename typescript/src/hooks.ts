@@ -1,18 +1,31 @@
-import type { FormSubmissionStopValue } from '@wirechunk/schemas/hooks/form-submission/stop-value';
-import type { FormSubmissionValue } from '@wirechunk/schemas/hooks/form-submission/value';
-import formSubmissionValueSchema from '@wirechunk/schemas/hooks/form-submission/value.json' with { type: 'json' };
+import type { BeforeCreateSiteStopValue } from '@wirechunk/schemas/hooks/before-create-site/stop-value';
+import type { BeforeCreateSiteValue } from '@wirechunk/schemas/hooks/before-create-site/value';
+import beforeCreateSiteValueSchema from '@wirechunk/schemas/hooks/before-create-site/value.json' with { type: 'json' };
+import type { BeforeSubmitFormStopValue } from '@wirechunk/schemas/hooks/before-submit-form/stop-value';
+import type { BeforeSubmitFormValue } from '@wirechunk/schemas/hooks/before-submit-form/value';
+import beforeSubmitFormValueSchema from '@wirechunk/schemas/hooks/before-submit-form/value.json' with { type: 'json' };
 import type { InitialFormDataValue } from '@wirechunk/schemas/hooks/initial-form-data/value';
 import initialFormDataValueSchema from '@wirechunk/schemas/hooks/initial-form-data/value.json' with { type: 'json' };
 import { HookHandler, registerHookHandler } from './start.js';
 
 /**
- * Handle the form-submission hook.
- * This hook is fired before the submission is saved.
+ * Handle the before-create-site hook.
+ * This hook is fired before a site is created. It can be used to modify the input data or to prevent the request with an error message.
  */
-export const handleFormSubmission = (
-  handler: HookHandler<FormSubmissionValue, FormSubmissionStopValue>,
+export const handleBeforeCreateSite = (
+  handler: HookHandler<BeforeCreateSiteValue, BeforeCreateSiteStopValue>,
 ): void => {
-  registerHookHandler('form-submission', formSubmissionValueSchema, handler);
+  registerHookHandler('before-create-site', beforeCreateSiteValueSchema, handler);
+};
+
+/**
+ * Handle the before-submit-form hook.
+ * This hook is fired before a form submission is saved.
+ */
+export const handleBeforeSubmitForm = (
+  handler: HookHandler<BeforeSubmitFormValue, BeforeSubmitFormStopValue>,
+): void => {
+  registerHookHandler('before-submit-form', beforeSubmitFormValueSchema, handler);
 };
 
 /**

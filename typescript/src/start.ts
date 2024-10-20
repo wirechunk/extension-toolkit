@@ -5,7 +5,7 @@ import fastify, {
   FastifyTypeProvider,
   RawServerDefault,
 } from 'fastify';
-import formSubmissionValueSchema from '@wirechunk/schemas/hooks/form-submission/value.json' with { type: 'json' };
+import beforeSubmitFormValueSchema from '@wirechunk/schemas/hooks/before-submit-form/value.json' with { type: 'json' };
 import contextDataSchema from '@wirechunk/schemas/context-data/context-data.json' with { type: 'json' };
 import { Ajv2020 as Ajv } from 'ajv/dist/2020.js';
 import type { HookResult } from '@wirechunk/schemas/hook-result';
@@ -71,7 +71,7 @@ const server = fastify({
   logger: true,
 });
 
-ajv.addSchema([contextDataSchema, formSubmissionValueSchema]);
+ajv.addSchema([contextDataSchema, beforeSubmitFormValueSchema]);
 
 server.setValidatorCompiler(({ schema }) => ajv.compile(schema));
 

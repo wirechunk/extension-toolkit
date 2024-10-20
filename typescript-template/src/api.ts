@@ -9,12 +9,12 @@ export const registerApi = (prisma: PrismaClient) =>
 
     server.register(formBody);
 
-    // Example API endpoint at GET /_api/ext/missed-call-text-back
+    // Example API endpoint at GET /_api/ext/<name>
     server.get('/', () => {
       return { message: 'Hello' };
     });
 
-    // Example API endpoint at POST /_api/ext/missed-call-text-back/test
+    // Example API endpoint at POST /_api/ext/<name>/test
     server.post(
       '/test',
       {

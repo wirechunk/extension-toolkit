@@ -16,18 +16,17 @@ const kebabToCamel = (kebab) =>
 const hookHandlerTemplate = async (hooksDirPath, hookName) => {
   const hookNamePascal = kebabToPascal(hookName);
   const hookNameCamel = kebabToCamel(hookName);
+  const inputType = `${hookNamePascal}Input`;
+  const resultType = `${hookNamePascal}Result`;
+  const inputSchema = `${hookNameCamel}InputSchema`;
+  const resultSchema = `${hookNameCamel}ResultSchema`;
 
-  const hasStopValueSchema = existsSync(`${hooksDirPath}/${hookName}/stop-value.json`);
+  const imports = `import type { ${inputType} } from '@wirechunk/schemas/hooks/${hookName}/input';
+import ${inputSchema} from '@wirechunk/schemas/hooks/${hookName}/input.json' with { type: 'json' };
+import type { ${resultType} } from '@wirechunk/schemas/hooks/${hookName}/result';
+import ${resultSchema} from '@wirechunk/schemas/hooks/${hookName}/result.json' with { type: 'json' };`;
 
-  const imports = `${
-    hasStopValueSchema
-      ? `import type { ${hookNamePascal}StopValue } from '@wirechunk/schemas/hooks/${hookName}/stop-value';
-`
-      : ''
-  }import type { ${hookNamePascal}Value } from '@wirechunk/schemas/hooks/${hookName}/value';
-import ${hookNameCamel}ValueSchema from '@wirechunk/schemas/hooks/${hookName}/value.json' with { type: 'json' };`;
-
-  let description;
+  let description: string | undefined;
   const descriptionFilePath = `${hooksDirPath}/${hookName}/description.txt`;
   if (existsSync(descriptionFilePath)) {
     const descriptionFileStat = await lstat(descriptionFilePath);
@@ -44,12 +43,32 @@ import ${hookNameCamel}ValueSchema from '@wirechunk/schemas/hooks/${hookName}/va
   }
 
   const handleFn = `/**
- * Handle the ${hookName} hook.${description ? `\n${description}` : ''}
+ * Register a handler for the ${hookName} hook.${description ? `\n${description}` : ''}
+ * This function should be called before starting the server.
  */
 export const handle${hookNamePascal} = (
-  handler: HookHandler<${hookNamePascal}Value, ${hasStopValueSchema ? `${hookNamePascal}StopValue` : `${hookNamePascal}Value`}>,
+  handler: (input: ${inputType}) => Promise<${resultType} | null> | ${resultType} | null,
 ): void => {
-  registerHookHandler('${hookName}', ${hookNameCamel}ValueSchema, handler);
+  server.post<{
+    Body: ${inputType};
+    Reply: ${resultType};
+  }>(
+    '/hooks/${hookName}',
+    {
+      schema: {
+        body: ${inputSchema},
+        response: ${resultSchema},
+      },
+    },
+    async ({ body }, reply) => {
+      const res = await handler(body);
+      if (!res) {
+        reply.statusCode = 204;
+        return;
+      }
+      return res;
+    },
+  );
 };`;
 
   return {
@@ -64,7 +83,7 @@ const hooksFileTemplate = async (hooksDirPath, hookNames) => {
   );
 
   return `${templates.map((t) => t.imports).join('\n')}
-import { HookHandler, registerHookHandler } from './start.js';
+import { server } from './start.js';
 
 ${templates.map((t) => t.handleFn).join('\n\n')}
 `;

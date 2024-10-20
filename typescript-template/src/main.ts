@@ -4,10 +4,10 @@ import { registerApi } from './api.ts';
 
 const prisma = new PrismaClient();
 
-handleBeforeSubmitForm(async (value) => {
+handleBeforeSubmitForm(async ({ value, context }) => {
   // Query from the database, check config, etc.
   return {
-    continue: value,
+    value,
   };
 });
 

@@ -1,6 +1,6 @@
 {
   "name": "@wirechunk/extension-toolkit",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Wirechunk extension toolkit",
   "type": "module",
   "repository": {
@@ -29,7 +29,7 @@
     "typecheck": "tsc",
     "typecheck-src": "tsc --skipLibCheck",
     "codegen": "npm run codegen:generate && npm run format",
-    "codegen:generate": "node scripts/codegen.js",
+    "codegen:generate": "node --experimental-transform-types scripts/codegen.ts",
     "lint": "eslint --fix .",
     "lint:check": "eslint .",
     "format": "prettier --write .",
@@ -49,8 +49,8 @@
     "typescript-eslint": "^8.0.0-alpha.60"
   },
   "dependencies": {
-    "@wirechunk/schemas": "0.0.5",
+    "@wirechunk/schemas": "0.0.6",
     "ajv": "^8.17.1",
-    "fastify": "^4.28.1"
+    "fastify": "^5.0.0"
   }
 }

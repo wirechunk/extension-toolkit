@@ -1,9 +1,6 @@
 import process from 'node:process';
-import fastify, {
-  FastifyBaseLogger,
-  FastifyInstance,
-  RawServerDefault,
-} from 'fastify';
+import type { FastifyBaseLogger, FastifyInstance, RawServerDefault } from 'fastify';
+import fastify from 'fastify';
 import beforeSubmitFormValueSchema from '@wirechunk/schemas/hooks/before-submit-form/value.json' with { type: 'json' };
 import contextDataSchema from '@wirechunk/schemas/context-data/context-data.json' with { type: 'json' };
 import { Ajv2020 as Ajv } from 'ajv/dist/2020.js';

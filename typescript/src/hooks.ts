@@ -14,6 +14,12 @@ import type { InitialFormDataInput } from '@wirechunk/schemas/hooks/initial-form
 import initialFormDataInputSchema from '@wirechunk/schemas/hooks/initial-form-data/input.json' with { type: 'json' };
 import type { InitialFormDataResult } from '@wirechunk/schemas/hooks/initial-form-data/result';
 import initialFormDataResultSchema from '@wirechunk/schemas/hooks/initial-form-data/result.json' with { type: 'json' };
+import {
+  validateAuthorizeCreateSiteInput,
+  validateBeforeCreateSiteInput,
+  validateBeforeSubmitFormInput,
+  validateInitialFormDataInput,
+} from '@wirechunk/schemas/validate';
 import { server } from './start.js';
 
 /**
@@ -35,8 +41,9 @@ export const handleAuthorizeCreateSite = (
     {
       schema: {
         body: authorizeCreateSiteInputSchema,
-        response: authorizeCreateSiteResultSchema,
+        response: { 200: authorizeCreateSiteResultSchema },
       },
+      validatorCompiler: () => validateAuthorizeCreateSiteInput,
     },
     async ({ body }, reply) => {
       const res = await handler(body);
@@ -67,8 +74,9 @@ export const handleBeforeCreateSite = (
     {
       schema: {
         body: beforeCreateSiteInputSchema,
-        response: beforeCreateSiteResultSchema,
+        response: { 200: beforeCreateSiteResultSchema },
       },
+      validatorCompiler: () => validateBeforeCreateSiteInput,
     },
     async ({ body }, reply) => {
       const res = await handler(body);
@@ -99,8 +107,9 @@ export const handleBeforeSubmitForm = (
     {
       schema: {
         body: beforeSubmitFormInputSchema,
-        response: beforeSubmitFormResultSchema,
+        response: { 200: beforeSubmitFormResultSchema },
       },
+      validatorCompiler: () => validateBeforeSubmitFormInput,
     },
     async ({ body }, reply) => {
       const res = await handler(body);
@@ -132,8 +141,9 @@ export const handleInitialFormData = (
     {
       schema: {
         body: initialFormDataInputSchema,
-        response: initialFormDataResultSchema,
+        response: { 200: initialFormDataResultSchema },
       },
+      validatorCompiler: () => validateInitialFormDataInput,
     },
     async ({ body }, reply) => {
       const res = await handler(body);

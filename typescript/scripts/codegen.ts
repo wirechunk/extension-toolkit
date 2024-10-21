@@ -13,7 +13,13 @@ const kebabToCamel = (kebab) =>
     .map((word, index) => (index === 0 ? word : word[0].toUpperCase() + word.slice(1)))
     .join('');
 
-const hookHandlerTemplate = async (hooksDirPath, hookName) => {
+type HookHandlerTemplate = {
+  inputType: string;
+  imports: string;
+  handleFn: string;
+};
+
+const hookHandlerTemplate = async (hooksDirPath, hookName): Promise<HookHandlerTemplate> => {
   const hookNamePascal = kebabToPascal(hookName);
   const hookNameCamel = kebabToCamel(hookName);
   const inputType = `${hookNamePascal}Input`;
@@ -57,8 +63,9 @@ export const handle${hookNamePascal} = (
     {
       schema: {
         body: ${inputSchema},
-        response: ${resultSchema},
+        response: { 200: ${resultSchema} },
       },
+      validatorCompiler: () => validate${inputType},
     },
     async ({ body }, reply) => {
       const res = await handler(body);
@@ -72,6 +79,7 @@ export const handle${hookNamePascal} = (
 };`;
 
   return {
+    inputType,
     imports,
     handleFn,
   };
@@ -83,6 +91,8 @@ const hooksFileTemplate = async (hooksDirPath, hookNames) => {
   );
 
   return `${templates.map((t) => t.imports).join('\n')}
+import {
+  ${templates.map((template) => `validate${template.inputType}`).join(',')} } from '@wirechunk/schemas/validate';
 import { server } from './start.js';
 
 ${templates.map((t) => t.handleFn).join('\n\n')}

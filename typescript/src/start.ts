@@ -1,17 +1,13 @@
 import process from 'node:process';
-import fastify, {
-  FastifyBaseLogger,
-  FastifyInstance,
-  FastifyTypeProvider,
-  RawServerDefault,
-} from 'fastify';
+import type { FastifyBaseLogger, FastifyInstance, RawServerDefault } from 'fastify';
+import fastify from 'fastify';
 import beforeSubmitFormValueSchema from '@wirechunk/schemas/hooks/before-submit-form/value.json' with { type: 'json' };
 import contextDataSchema from '@wirechunk/schemas/context-data/context-data.json' with { type: 'json' };
 import { Ajv2020 as Ajv } from 'ajv/dist/2020.js';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
-import { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts';
+import type { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts';
 
 const ajv = new Ajv({
   strict: true,
@@ -109,7 +105,7 @@ export const registerApiRoutes = (
       IncomingMessage,
       ServerResponse,
       FastifyBaseLogger,
-      FastifyTypeProvider
+      JsonSchemaToTsProvider
     >,
   ) => void,
 ) =>

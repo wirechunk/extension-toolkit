@@ -1,12 +1,9 @@
 import { registerApiRoutes } from '@wirechunk/extension-toolkit';
 import { PrismaClient } from '@prisma/client';
 import formBody from '@fastify/formbody';
-import type { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts';
 
 export const registerApi = (prisma: PrismaClient) =>
-  registerApiRoutes((origServer) => {
-    const server = origServer.withTypeProvider<JsonSchemaToTsProvider>();
-
+  registerApiRoutes((server) => {
     server.register(formBody);
 
     // Example API endpoint at GET /_api/ext/<name>

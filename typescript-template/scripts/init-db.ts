@@ -15,7 +15,7 @@ if (!shadowDbUrl) {
   throw new Error('A SHADOW_DATABASE_URL environment variable is not set');
 }
 
-const getDbName = (url) => {
+const getDbName = (url: string) => {
   const { pathname } = new URL(url);
   if (!pathname || pathname === '/') {
     throw new Error(`No database name can be extracted from "${url}"`);
@@ -25,7 +25,7 @@ const getDbName = (url) => {
 
 const shadowDbName = getDbName(shadowDbUrl);
 
-const initSchema = async (client) => {
+const initSchema = async (client: pg.Client) => {
   await client.query(`
     do $$
     begin

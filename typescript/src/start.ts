@@ -1,21 +1,10 @@
 import process from 'node:process';
 import type { FastifyBaseLogger, FastifyInstance, RawServerDefault } from 'fastify';
 import fastify from 'fastify';
-import beforeSubmitFormValueSchema from '@wirechunk/schemas/hooks/before-submit-form/value.json' with { type: 'json' };
-import contextDataSchema from '@wirechunk/schemas/context-data/context-data.json' with { type: 'json' };
-import { Ajv2020 as Ajv } from 'ajv/dist/2020.js';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import type { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts';
-
-const ajv = new Ajv({
-  strict: true,
-  removeAdditional: true,
-  coerceTypes: false,
-  allErrors: false,
-  allowUnionTypes: true,
-});
 
 const port = process.env.PORT;
 if (!port) {
@@ -65,10 +54,6 @@ if (typeof extensionName !== 'string') {
 export const server = fastify({
   logger: true,
 }).withTypeProvider<JsonSchemaToTsProvider>();
-
-ajv.addSchema([contextDataSchema, beforeSubmitFormValueSchema]);
-
-server.setValidatorCompiler(({ schema }) => ajv.compile(schema));
 
 // No validation on serializing because the client should validate.
 server.setSerializerCompiler(() => (data) => JSON.stringify(data));

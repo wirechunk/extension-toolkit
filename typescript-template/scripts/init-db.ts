@@ -72,8 +72,8 @@ try {
   await appDbClient.connect();
   await initSchema(appDbClient);
 
-  await appDbClient.query(`drop database if exists ${shadowDbName}`);
-  await appDbClient.query(`create database ${shadowDbName}`);
+  await appDbClient.query(`drop database if exists "${shadowDbName}"`);
+  await appDbClient.query(`create database "${shadowDbName}"`);
   console.log(`Created shadow database ${shadowDbName}`);
 } finally {
   await appDbClient.end();

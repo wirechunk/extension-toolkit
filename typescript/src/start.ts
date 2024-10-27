@@ -68,8 +68,7 @@ server.get('/health', () => {
  */
 export const start = async () => {
   try {
-    await server.listen({ port: portNumber });
-    console.log(`Server listening on port ${portNumber}`);
+    await server.listen({ host: '0.0.0.0', port: portNumber });
   } catch (err) {
     server.log.error(err);
     process.exit(1);

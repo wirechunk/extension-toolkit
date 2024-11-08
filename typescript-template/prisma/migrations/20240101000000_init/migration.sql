@@ -9,7 +9,7 @@ create extension if not exists "pg_trgm";
 
 drop type if exists "UserStatus";
 
-create type "UserStatus" as enum ('Pending', 'Active', 'ExpiredInactive', 'Deactivated');
+create type "UserStatus" as enum ('Pending', 'Active', 'Deactivated');
 
 drop view if exists "Users";
 
@@ -21,7 +21,6 @@ select
   "email",
   "emailVerified",
   "orgId",
-  "orgPrimary",
   "role",
   "status",
   "expiresAt",
@@ -34,6 +33,7 @@ create view "Orgs" as
 select
   "id",
   "name",
+  "primaryUserId",
   "createdAt"
 from public."Orgs";
 

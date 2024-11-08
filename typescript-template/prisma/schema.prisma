@@ -18,7 +18,6 @@ datasource db {
 enum UserStatus {
   Pending
   Active
-  ExpiredInactive
   Deactivated
 }
 
@@ -30,8 +29,7 @@ view User {
   lastName      String
   email         String     @unique
   emailVerified Boolean
-  orgId         String     @db.Uuid
-  orgPrimary    Boolean
+  orgId         String
   role          String
   status        UserStatus
   expiresAt     DateTime?
@@ -39,15 +37,20 @@ view User {
 
   org Org? @relation(fields: [orgId], references: [id])
 
+  primaryForOrg Org? @relation("PrimaryUser")
+
   @@map("Users")
 }
 
 // A core table. This view cannot be modified in the database. However, Prisma models can have
 // relations to rows in this table.
 view Org {
-  id        String   @id @db.Uuid
-  name      String?
-  createdAt DateTime
+  id            String   @id
+  name          String?
+  primaryUserId String?  @unique
+  createdAt     DateTime
+
+  primaryUser User? @relation("PrimaryUser", fields: [primaryUserId], references: [id])
 
   sites Site[]
   users User[]
@@ -60,8 +63,8 @@ view Org {
 view Site {
   id        String   @id @db.Uuid
   domain    String   @unique
-  orgId     String?  @db.Uuid
-  name      String?
+  name      String
+  orgId     String?
   createdAt DateTime
 
   org Org? @relation(fields: [orgId], references: [id])

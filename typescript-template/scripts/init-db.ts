@@ -30,7 +30,7 @@ const initSchema = async (client: pg.Client) => {
     do $$
     begin
       if not exists (select 1 from pg_type t join pg_namespace n on n.oid = t.typnamespace where typname = 'UserStatus' and n.nspname = 'public') then
-        create type public."UserStatus" as enum ('Pending', 'Active', 'ExpiredInactive', 'Deactivated');
+        create type public."UserStatus" as enum ('Pending', 'Active', 'Deactivated');
       end if;
     end $$;
 
@@ -41,7 +41,6 @@ const initSchema = async (client: pg.Client) => {
       "email" text not null unique,
       "emailVerified" boolean not null,
       "orgId" text not null,
-      "orgPrimary" boolean not null,
       "role" text not null,
       "status" public."UserStatus" not null,
       "expiresAt" timestamp with time zone,
@@ -51,14 +50,15 @@ const initSchema = async (client: pg.Client) => {
     create table if not exists public."Orgs" (
       "id" text primary key,
       "name" text,
+      "primaryUserId" text,
       "createdAt" timestamp with time zone not null
     );
 
     create table if not exists public."Sites" (
       "id" text primary key,
       "domain" text not null,
+      "name" text not null,
       "orgId" text,
-      "name" text,
       "createdAt" timestamp with time zone not null
     );
   `);

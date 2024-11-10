@@ -2,10 +2,18 @@ import type { AuthorizeCreateSiteInput } from '@wirechunk/schemas/hooks/authoriz
 import authorizeCreateSiteInputSchema from '@wirechunk/schemas/hooks/authorize-create-site/input.json' with { type: 'json' };
 import type { AuthorizeCreateSiteResult } from '@wirechunk/schemas/hooks/authorize-create-site/result';
 import authorizeCreateSiteResultSchema from '@wirechunk/schemas/hooks/authorize-create-site/result.json' with { type: 'json' };
+import type { AuthorizeEditSiteInput } from '@wirechunk/schemas/hooks/authorize-edit-site/input';
+import authorizeEditSiteInputSchema from '@wirechunk/schemas/hooks/authorize-edit-site/input.json' with { type: 'json' };
+import type { AuthorizeEditSiteResult } from '@wirechunk/schemas/hooks/authorize-edit-site/result';
+import authorizeEditSiteResultSchema from '@wirechunk/schemas/hooks/authorize-edit-site/result.json' with { type: 'json' };
 import type { BeforeCreateSiteInput } from '@wirechunk/schemas/hooks/before-create-site/input';
 import beforeCreateSiteInputSchema from '@wirechunk/schemas/hooks/before-create-site/input.json' with { type: 'json' };
 import type { BeforeCreateSiteResult } from '@wirechunk/schemas/hooks/before-create-site/result';
 import beforeCreateSiteResultSchema from '@wirechunk/schemas/hooks/before-create-site/result.json' with { type: 'json' };
+import type { BeforeEditSiteInput } from '@wirechunk/schemas/hooks/before-edit-site/input';
+import beforeEditSiteInputSchema from '@wirechunk/schemas/hooks/before-edit-site/input.json' with { type: 'json' };
+import type { BeforeEditSiteResult } from '@wirechunk/schemas/hooks/before-edit-site/result';
+import beforeEditSiteResultSchema from '@wirechunk/schemas/hooks/before-edit-site/result.json' with { type: 'json' };
 import type { BeforeSubmitFormInput } from '@wirechunk/schemas/hooks/before-submit-form/input';
 import beforeSubmitFormInputSchema from '@wirechunk/schemas/hooks/before-submit-form/input.json' with { type: 'json' };
 import type { BeforeSubmitFormResult } from '@wirechunk/schemas/hooks/before-submit-form/result';
@@ -16,7 +24,9 @@ import type { InitialFormDataResult } from '@wirechunk/schemas/hooks/initial-for
 import initialFormDataResultSchema from '@wirechunk/schemas/hooks/initial-form-data/result.json' with { type: 'json' };
 import {
   validateAuthorizeCreateSiteInput,
+  validateAuthorizeEditSiteInput,
   validateBeforeCreateSiteInput,
+  validateBeforeEditSiteInput,
   validateBeforeSubmitFormInput,
   validateInitialFormDataInput,
 } from '@wirechunk/schemas/validate';
@@ -57,6 +67,40 @@ export const handleAuthorizeCreateSite = (
 };
 
 /**
+ * Register a handler for the authorize-edit-site hook.
+ * This hook is used to check if a user is permitted to edit a site.
+ * It is fired before the before-edit-site hook.
+ * This function should be called before starting the server.
+ */
+export const handleAuthorizeEditSite = (
+  handler: (
+    input: AuthorizeEditSiteInput,
+  ) => Promise<AuthorizeEditSiteResult | null> | AuthorizeEditSiteResult | null,
+): void => {
+  server.post<{
+    Body: AuthorizeEditSiteInput;
+    Reply: AuthorizeEditSiteResult;
+  }>(
+    '/hooks/authorize-edit-site',
+    {
+      schema: {
+        body: authorizeEditSiteInputSchema,
+        response: { 200: authorizeEditSiteResultSchema },
+      },
+      validatorCompiler: () => validateAuthorizeEditSiteInput,
+    },
+    async ({ body }, reply) => {
+      const res = await handler(body);
+      if (!res) {
+        reply.statusCode = 204;
+        return;
+      }
+      return res;
+    },
+  );
+};
+
+/**
  * Register a handler for the before-create-site hook.
  * This hook is fired before a site is created. It can be used to modify the input data or to prevent the request with an error message.
  * This function should be called before starting the server.
@@ -77,6 +121,39 @@ export const handleBeforeCreateSite = (
         response: { 200: beforeCreateSiteResultSchema },
       },
       validatorCompiler: () => validateBeforeCreateSiteInput,
+    },
+    async ({ body }, reply) => {
+      const res = await handler(body);
+      if (!res) {
+        reply.statusCode = 204;
+        return;
+      }
+      return res;
+    },
+  );
+};
+
+/**
+ * Register a handler for the before-edit-site hook.
+ * This hook is fired before a site is edited. It can be used to modify the input data or to prevent the request with an error message.
+ * This function should be called before starting the server.
+ */
+export const handleBeforeEditSite = (
+  handler: (
+    input: BeforeEditSiteInput,
+  ) => Promise<BeforeEditSiteResult | null> | BeforeEditSiteResult | null,
+): void => {
+  server.post<{
+    Body: BeforeEditSiteInput;
+    Reply: BeforeEditSiteResult;
+  }>(
+    '/hooks/before-edit-site',
+    {
+      schema: {
+        body: beforeEditSiteInputSchema,
+        response: { 200: beforeEditSiteResultSchema },
+      },
+      validatorCompiler: () => validateBeforeEditSiteInput,
     },
     async ({ body }, reply) => {
       const res = await handler(body);

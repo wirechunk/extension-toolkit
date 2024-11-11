@@ -6,6 +6,10 @@ import type { AuthorizeEditSiteInput } from '@wirechunk/schemas/hooks/authorize-
 import authorizeEditSiteInputSchema from '@wirechunk/schemas/hooks/authorize-edit-site/input.json' with { type: 'json' };
 import type { AuthorizeEditSiteResult } from '@wirechunk/schemas/hooks/authorize-edit-site/result';
 import authorizeEditSiteResultSchema from '@wirechunk/schemas/hooks/authorize-edit-site/result.json' with { type: 'json' };
+import type { AuthorizeEditSiteDomainInput } from '@wirechunk/schemas/hooks/authorize-edit-site-domain/input';
+import authorizeEditSiteDomainInputSchema from '@wirechunk/schemas/hooks/authorize-edit-site-domain/input.json' with { type: 'json' };
+import type { AuthorizeEditSiteDomainResult } from '@wirechunk/schemas/hooks/authorize-edit-site-domain/result';
+import authorizeEditSiteDomainResultSchema from '@wirechunk/schemas/hooks/authorize-edit-site-domain/result.json' with { type: 'json' };
 import type { BeforeCreateSiteInput } from '@wirechunk/schemas/hooks/before-create-site/input';
 import beforeCreateSiteInputSchema from '@wirechunk/schemas/hooks/before-create-site/input.json' with { type: 'json' };
 import type { BeforeCreateSiteResult } from '@wirechunk/schemas/hooks/before-create-site/result';
@@ -25,6 +29,7 @@ import initialFormDataResultSchema from '@wirechunk/schemas/hooks/initial-form-d
 import {
   validateAuthorizeCreateSiteInput,
   validateAuthorizeEditSiteInput,
+  validateAuthorizeEditSiteDomainInput,
   validateBeforeCreateSiteInput,
   validateBeforeEditSiteInput,
   validateBeforeSubmitFormInput,
@@ -70,6 +75,7 @@ export const handleAuthorizeCreateSite = (
  * Register a handler for the authorize-edit-site hook.
  * This hook is used to check if a user is permitted to edit a site.
  * It is fired before the before-edit-site hook.
+ * Note that the authorize-edit-site-domain hook is used to check if a user is permitted to edit a site's domain.
  * This function should be called before starting the server.
  */
 export const handleAuthorizeEditSite = (
@@ -88,6 +94,40 @@ export const handleAuthorizeEditSite = (
         response: { 200: authorizeEditSiteResultSchema },
       },
       validatorCompiler: () => validateAuthorizeEditSiteInput,
+    },
+    async ({ body }, reply) => {
+      const res = await handler(body);
+      if (!res) {
+        reply.statusCode = 204;
+        return;
+      }
+      return res;
+    },
+  );
+};
+
+/**
+ * Register a handler for the authorize-edit-site-domain hook.
+ * This hook is used to check if a user is permitted to edit a site’s domain.
+ * It is fired before the before-edit-site hook.
+ * This function should be called before starting the server.
+ */
+export const handleAuthorizeEditSiteDomain = (
+  handler: (
+    input: AuthorizeEditSiteDomainInput,
+  ) => Promise<AuthorizeEditSiteDomainResult | null> | AuthorizeEditSiteDomainResult | null,
+): void => {
+  server.post<{
+    Body: AuthorizeEditSiteDomainInput;
+    Reply: AuthorizeEditSiteDomainResult;
+  }>(
+    '/hooks/authorize-edit-site-domain',
+    {
+      schema: {
+        body: authorizeEditSiteDomainInputSchema,
+        response: { 200: authorizeEditSiteDomainResultSchema },
+      },
+      validatorCompiler: () => validateAuthorizeEditSiteDomainInput,
     },
     async ({ body }, reply) => {
       const res = await handler(body);

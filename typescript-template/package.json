@@ -16,7 +16,7 @@
   "dependencies": {
     "@fastify/formbody": "^8.0.1",
     "@prisma/client": "^5.21.1",
-    "@wirechunk/extension-toolkit": "0.0.8"
+    "@wirechunk/extension-toolkit": "0.0.14"
   },
   "devDependencies": {
     "@types/node": "^22.7.7",

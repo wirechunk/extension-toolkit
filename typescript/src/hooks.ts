@@ -14,6 +14,10 @@ import type { BeforeCreateSiteInput } from '@wirechunk/schemas/hooks/before-crea
 import beforeCreateSiteInputSchema from '@wirechunk/schemas/hooks/before-create-site/input.json' with { type: 'json' };
 import type { BeforeCreateSiteResult } from '@wirechunk/schemas/hooks/before-create-site/result';
 import beforeCreateSiteResultSchema from '@wirechunk/schemas/hooks/before-create-site/result.json' with { type: 'json' };
+import type { BeforeCreateUserInput } from '@wirechunk/schemas/hooks/before-create-user/input';
+import beforeCreateUserInputSchema from '@wirechunk/schemas/hooks/before-create-user/input.json' with { type: 'json' };
+import type { BeforeCreateUserResult } from '@wirechunk/schemas/hooks/before-create-user/result';
+import beforeCreateUserResultSchema from '@wirechunk/schemas/hooks/before-create-user/result.json' with { type: 'json' };
 import type { BeforeEditSiteInput } from '@wirechunk/schemas/hooks/before-edit-site/input';
 import beforeEditSiteInputSchema from '@wirechunk/schemas/hooks/before-edit-site/input.json' with { type: 'json' };
 import type { BeforeEditSiteResult } from '@wirechunk/schemas/hooks/before-edit-site/result';
@@ -31,6 +35,7 @@ import {
   validateAuthorizeEditSiteInput,
   validateAuthorizeEditSiteDomainInput,
   validateBeforeCreateSiteInput,
+  validateBeforeCreateUserInput,
   validateBeforeEditSiteInput,
   validateBeforeSubmitFormInput,
   validateInitialFormDataInput,
@@ -161,6 +166,40 @@ export const handleBeforeCreateSite = (
         response: { 200: beforeCreateSiteResultSchema },
       },
       validatorCompiler: () => validateBeforeCreateSiteInput,
+    },
+    async ({ body }, reply) => {
+      const res = await handler(body);
+      if (!res) {
+        reply.statusCode = 204;
+        return;
+      }
+      return res;
+    },
+  );
+};
+
+/**
+ * Register a handler for the before-create-user hook.
+ * This hook is fired before a user is created. It can be used to modify the input data or to prevent the request with an error message.
+ * This hook is not used when creating an admin user.
+ * This function should be called before starting the server.
+ */
+export const handleBeforeCreateUser = (
+  handler: (
+    input: BeforeCreateUserInput,
+  ) => Promise<BeforeCreateUserResult | null> | BeforeCreateUserResult | null,
+): void => {
+  server.post<{
+    Body: BeforeCreateUserInput;
+    Reply: BeforeCreateUserResult;
+  }>(
+    '/hooks/before-create-user',
+    {
+      schema: {
+        body: beforeCreateUserInputSchema,
+        response: { 200: beforeCreateUserResultSchema },
+      },
+      validatorCompiler: () => validateBeforeCreateUserInput,
     },
     async ({ body }, reply) => {
       const res = await handler(body);

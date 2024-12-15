@@ -1,2 +1,2 @@
 export * from './hooks.js';
-export { registerApiRoutes, start } from './start.js';
+export { registerApiRoutes, setHealthCheck, start } from './start.js';

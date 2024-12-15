@@ -58,9 +58,19 @@ export const server = fastify({
 // No validation on serializing because the client should validate.
 server.setSerializerCompiler(() => (data) => JSON.stringify(data));
 
-server.get('/health', () => {
-  return 'OK';
-});
+let healthCheck: () => 'OK' | Promise<'OK'> = () => 'OK';
+
+/**
+ * Set a custom function to use as the health check for the server. The function should verify that all of the
+ * server's dependencies (like connecting to the database) are healthy. This function should return a promise that
+ * resolves to 'OK' if the check passes, or reject the promise (throw an exception) otherwise.
+ */
+export const setHealthCheck = (fn: () => 'OK' | Promise<'OK'>) => {
+  healthCheck = fn;
+};
+
+// This wrapper function is needed so that we can update the healthCheck reference after this module is evaluated.
+server.get('/health', () => healthCheck());
 
 /**
  * Start the extension server, responding to hooks and API requests. This function should be called

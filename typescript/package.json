@@ -1,6 +1,6 @@
 {
   "name": "@wirechunk/extension-toolkit",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "Wirechunk extension toolkit",
   "type": "module",
   "repository": {
@@ -14,15 +14,20 @@
   },
   "homepage": "https://github.com/wirechunk/extension-toolkit#readme",
   "publishConfig": {
+    "access": "public",
     "provenance": true
   },
   "files": [
     "build"
   ],
   "exports": {
-    ".": {
-      "import": "./build/main.js",
-      "types": "./build/main.d.ts"
+    "./server": {
+      "types": "./build/server/main.d.ts",
+      "import": "./build/server/main.js"
+    },
+    "./web/analytics-context": {
+      "types": "./build/web/analytics-context.d.ts",
+      "import": "./build/web/analytics-context.js"
     }
   },
   "scripts": {
@@ -41,10 +46,12 @@
   "devDependencies": {
     "@eslint/js": "^9.17.0",
     "@types/node": "^22.10.2",
+    "@types/react": "^19.0.2",
     "eslint": "^9.17.0",
     "eslint-config-prettier": "^9.1.0",
     "globals": "^15.13.0",
     "prettier": "^3.4.2",
+    "react": "^19.0.0",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.18.0"
   },

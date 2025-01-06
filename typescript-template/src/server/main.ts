@@ -1,4 +1,4 @@
-import { handleBeforeSubmitForm, start } from '@wirechunk/extension-toolkit';
+import { handleBeforeSubmitForm, start } from '@wirechunk/extension-toolkit/server';
 import { PrismaClient } from '@prisma/client';
 import { registerApi } from './api.ts';
 

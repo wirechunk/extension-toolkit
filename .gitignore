@@ -3,3 +3,4 @@ node_modules
 .yalc
 yalc.lock
 /.idea/compiler.xml
+/typescript-template/package-lock.json

@@ -1,37 +1,29 @@
 // This is your Prisma schema file. Learn more in the docs: https://www.prisma.io/docs/orm
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["relationJoins", "tracing", "views"]
+  previewFeatures = ["relationJoins", "views"]
   binaryTargets   = ["native", "debian-openssl-3.0.x", "linux-arm64-openssl-3.0.x"]
   extensions      = [btree_gin, pg_trgm]
 }
 
 datasource db {
-  provider          = "postgresql"
-  url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
-// Core schema
-
-// A core type. This type cannot be modified in the database.
-enum UserStatus {
-  Pending
-  Active
-  Deactivated
-}
-
-// A core table. This view cannot be modified in the database. However, Prisma models can have
-// relations to rows in this table.
+/// A view into the Users table for a platform on Wirechunk.
+/// This is a built-in Wirechunk view and cannot be alter or dropped.
+/// However, the extension's own tables can have Prisma relations to this view.
 view User {
-  id            String     @id @db.Uuid
+  id            String    @id @db.Uuid
   firstName     String
   lastName      String
-  email         String     @unique
+  email         String    @unique
   emailVerified Boolean
-  orgId         String
-  role          String
-  status        UserStatus
+  orgId         String    @db.Uuid
+  /// One of Pending, Active, or Deactivated.
+  status        String
+  role          String?
   expiresAt     DateTime?
   createdAt     DateTime
 
@@ -42,10 +34,11 @@ view User {
   @@map("Users")
 }
 
-// A core table. This view cannot be modified in the database. However, Prisma models can have
-// relations to rows in this table.
+/// A view into the Orgs table for a platform on Wirechunk.
+/// This is a built-in Wirechunk view and cannot be alter or dropped.
+/// However, the extension's own tables can have Prisma relations to this view.
 view Org {
-  id            String   @id
+  id            String   @id @db.Uuid
   name          String?
   primaryUserId String?  @unique
   createdAt     DateTime
@@ -58,13 +51,15 @@ view Org {
   @@map("Orgs")
 }
 
-// A core table. This view cannot be modified in the database. However, Prisma models can have
-// relations to rows in this table.
+/// A view into the Sites table for a platform on Wirechunk.
+/// This is a built-in Wirechunk view and cannot be alter or dropped.
+/// However, the extension's own tables can have Prisma relations to this view.
 view Site {
   id        String   @id @db.Uuid
   domain    String   @unique
   name      String
-  orgId     String?
+  /// The ID of the org that owns the site. If null, then the site belongs directly to the platform.
+  orgId     String?  @db.Uuid
   createdAt DateTime
 
   org Org? @relation(fields: [orgId], references: [id])

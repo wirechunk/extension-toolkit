@@ -4,28 +4,27 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node --experimental-transform-types --env-file .env --env-file .env.local --watch ./src/main.ts",
-    "db:init": "node --experimental-transform-types --env-file .env --env-file .env.local ./scripts/init-db.ts",
+    "dev": "node --experimental-transform-types --env-file .env --env-file-if-exists .env.local --watch ./src/server/main.ts",
+    "db:init": "node --experimental-transform-types --env-file .env --env-file-if-exists .env.local ./scripts/init-db.ts",
     "db:migrate": "npm run db:init && dotenv -c -- prisma migrate dev",
     "typecheck": "tsc",
     "typecheck-src": "tsc --skipLibCheck",
     "format": "prettier --write .",
-    "test": "vitest run",
-    "postinstall": "touch .env.local"
+    "format:check": "prettier --check .",
+    "test": "vitest run"
   },
   "dependencies": {
     "@fastify/formbody": "^8.0.1",
-    "@prisma/client": "^5.21.1",
-    "@wirechunk/extension-toolkit": "0.0.14"
+    "@prisma/client": "^6.2.1",
+    "@wirechunk/extension-toolkit": "^0.0.19"
   },
   "devDependencies": {
-    "@types/node": "^22.7.7",
+    "@types/node": "^22.10.5",
     "@types/pg": "^8.11.10",
-    "dotenv-cli": "^7.4.2",
-    "pg": "^8.12.0",
-    "prettier": "^3.3.3",
-    "prisma": "^5.21.1",
-    "typescript": "^5.6.3",
-    "vitest": "^2.0.5"
+    "pg": "^8.13.1",
+    "prettier": "^3.4.2",
+    "prisma": "^6.2.1",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
   }
 }

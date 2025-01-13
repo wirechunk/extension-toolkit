@@ -1,5 +1,6 @@
-node_modules
-/*/build
+.idea/compiler.xml
 .yalc
+build
+node_modules
+typescript-template/package-lock.json
 yalc.lock
-/.idea/compiler.xml

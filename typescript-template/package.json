@@ -15,15 +15,15 @@
   },
   "dependencies": {
     "@fastify/formbody": "^8.0.1",
-    "@prisma/client": "^6.1.0",
-    "@wirechunk/extension-toolkit": "^0.0.18"
+    "@prisma/client": "^6.2.1",
+    "@wirechunk/extension-toolkit": "^0.0.19"
   },
   "devDependencies": {
     "@types/node": "^22.10.5",
     "@types/pg": "^8.11.10",
     "pg": "^8.13.1",
     "prettier": "^3.4.2",
-    "prisma": "^6.1.0",
+    "prisma": "^6.2.1",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
   }

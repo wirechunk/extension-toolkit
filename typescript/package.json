@@ -1,6 +1,6 @@
 {
   "name": "@wirechunk/extension-toolkit",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "Wirechunk extension toolkit",
   "type": "module",
   "repository": {
@@ -24,6 +24,10 @@
     "./server": {
       "types": "./build/server/main.d.ts",
       "import": "./build/server/main.js"
+    },
+    "./server/util": {
+      "types": "./build/server/util.d.ts",
+      "import": "./build/server/util.js"
     },
     "./web/analytics-context": {
       "types": "./build/web/analytics-context.d.ts",
@@ -58,6 +62,7 @@
   "dependencies": {
     "@fastify/type-provider-json-schema-to-ts": "^4.0.1",
     "@wirechunk/schemas": "0.0.14",
+    "cookie": "^1.0.2",
     "fastify": "^5.2.0"
   }
 }

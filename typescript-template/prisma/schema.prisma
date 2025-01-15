@@ -20,7 +20,7 @@ view User {
   lastName      String
   email         String    @unique
   emailVerified Boolean
-  orgId         String    @db.Uuid
+  orgId         String
   /// One of Pending, Active, or Deactivated.
   status        String
   role          String?
@@ -38,7 +38,7 @@ view User {
 /// This is a built-in Wirechunk view and cannot be alter or dropped.
 /// However, the extension's own tables can have Prisma relations to this view.
 view Org {
-  id            String   @id @db.Uuid
+  id            String   @id
   name          String?
   primaryUserId String?  @unique
   createdAt     DateTime

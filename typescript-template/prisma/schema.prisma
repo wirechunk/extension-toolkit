@@ -20,7 +20,7 @@ view User {
   lastName      String
   email         String    @unique
   emailVerified Boolean
-  orgId         String    @db.Uuid
+  orgId         String
   /// One of Pending, Active, or Deactivated.
   status        String
   role          String?

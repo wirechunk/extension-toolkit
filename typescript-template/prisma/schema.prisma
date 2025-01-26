@@ -59,7 +59,7 @@ view Site {
   domain    String   @unique
   name      String
   /// The ID of the org that owns the site. If null, then the site belongs directly to the platform.
-  orgId     String?  @db.Uuid
+  orgId     String?
   createdAt DateTime
 
   org Org? @relation(fields: [orgId], references: [id])

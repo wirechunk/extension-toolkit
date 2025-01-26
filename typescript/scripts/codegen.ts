@@ -99,7 +99,7 @@ ${templates.map((t) => t.handleFn).join('\n\n')}
 `;
 };
 
-const codegenHooks = async (hooksDirPath) => {
+const codegenHooks = async (hooksDirPath: string) => {
   const files = await readdir(hooksDirPath);
   const hookNames = [];
   for (const file of files) {
@@ -113,7 +113,7 @@ const codegenHooks = async (hooksDirPath) => {
   }
 
   const fileContents = await hooksFileTemplate(hooksDirPath, hookNames);
-  await writeFile('src/hooks.ts', fileContents);
+  await writeFile('src/server/hooks.ts', fileContents);
 };
 
 await codegenHooks('node_modules/@wirechunk/schemas/src/hooks');

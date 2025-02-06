@@ -18,6 +18,7 @@
     "noImplicitReturns": true,
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
+    "allowImportingTsExtensions": true,
     "skipLibCheck": false,
     "noEmit": true
   }

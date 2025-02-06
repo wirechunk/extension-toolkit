@@ -7,15 +7,15 @@ const authCookieName = 'session';
 export const authTokenFromRequest = ({
   headers,
 }: Pick<FastifyRequest, 'headers'>): string | null => {
-  const cookieToken = headers.cookie && parseCookies(headers.cookie)[authCookieName];
-  if (cookieToken) {
-    return cookieToken;
-  }
   if (headers.authorization) {
     const [scheme, token] = headers.authorization.split(' ');
     if (scheme === 'Bearer' && token) {
       return token;
     }
+  }
+  const cookieToken = headers.cookie && parseCookies(headers.cookie)[authCookieName];
+  if (cookieToken) {
+    return cookieToken;
   }
   return null;
 };

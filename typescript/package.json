@@ -1,6 +1,6 @@
 {
   "name": "@wirechunk/extension-toolkit",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "Wirechunk extension toolkit",
   "type": "module",
   "repository": {
@@ -61,7 +61,7 @@
   },
   "dependencies": {
     "@fastify/type-provider-json-schema-to-ts": "^4.0.1",
-    "@wirechunk/schemas": "0.0.17",
+    "@wirechunk/schemas": "0.0.20",
     "cookie": "^1.0.2",
     "fastify": "^5.2.1"
   }

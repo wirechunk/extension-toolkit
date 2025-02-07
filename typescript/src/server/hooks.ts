@@ -26,6 +26,10 @@ import type { BeforeSubmitFormInput } from '@wirechunk/schemas/hooks/before-subm
 import beforeSubmitFormInputSchema from '@wirechunk/schemas/hooks/before-submit-form/input.json' with { type: 'json' };
 import type { BeforeSubmitFormResult } from '@wirechunk/schemas/hooks/before-submit-form/result';
 import beforeSubmitFormResultSchema from '@wirechunk/schemas/hooks/before-submit-form/result.json' with { type: 'json' };
+import type { BeforeSubmitFormWebhookInput } from '@wirechunk/schemas/hooks/before-submit-form-webhook/input';
+import beforeSubmitFormWebhookInputSchema from '@wirechunk/schemas/hooks/before-submit-form-webhook/input.json' with { type: 'json' };
+import type { BeforeSubmitFormWebhookResult } from '@wirechunk/schemas/hooks/before-submit-form-webhook/result';
+import beforeSubmitFormWebhookResultSchema from '@wirechunk/schemas/hooks/before-submit-form-webhook/result.json' with { type: 'json' };
 import type { InitialFormDataInput } from '@wirechunk/schemas/hooks/initial-form-data/input';
 import initialFormDataInputSchema from '@wirechunk/schemas/hooks/initial-form-data/input.json' with { type: 'json' };
 import type { InitialFormDataResult } from '@wirechunk/schemas/hooks/initial-form-data/result';
@@ -38,6 +42,7 @@ import {
   validateBeforeCreateUserInput,
   validateBeforeEditSiteInput,
   validateBeforeSubmitFormInput,
+  validateBeforeSubmitFormWebhookInput,
   validateInitialFormDataInput,
 } from '@wirechunk/schemas/validate';
 import { server } from './start.js';
@@ -266,6 +271,41 @@ export const handleBeforeSubmitForm = (
         response: { 200: beforeSubmitFormResultSchema },
       },
       validatorCompiler: () => validateBeforeSubmitFormInput,
+    },
+    async ({ body }, reply) => {
+      const res = await handler(body);
+      if (!res) {
+        reply.statusCode = 204;
+        return;
+      }
+      return res;
+    },
+  );
+};
+
+/**
+ * Register a handler for the before-submit-form-webhook hook.
+ * This hook is fired after a form submission is processed successfully, before a webhook for a form submission is sent.
+ * It can be used to modify the webhook payload, including adding additional fields to the payload.
+ * The hook is invoked asynchronously by the Wirechunk job worker, so there is no site or principal field in the context object.
+ * This function should be called before starting the server.
+ */
+export const handleBeforeSubmitFormWebhook = (
+  handler: (
+    input: BeforeSubmitFormWebhookInput,
+  ) => Promise<BeforeSubmitFormWebhookResult | null> | BeforeSubmitFormWebhookResult | null,
+): void => {
+  server.post<{
+    Body: BeforeSubmitFormWebhookInput;
+    Reply: BeforeSubmitFormWebhookResult;
+  }>(
+    '/hooks/before-submit-form-webhook',
+    {
+      schema: {
+        body: beforeSubmitFormWebhookInputSchema,
+        response: { 200: beforeSubmitFormWebhookResultSchema },
+      },
+      validatorCompiler: () => validateBeforeSubmitFormWebhookInput,
     },
     async ({ body }, reply) => {
       const res = await handler(body);

@@ -1,4 +1,8 @@
-# Template for TypeScript extensions for Wirechunk
+# Wirechunk Extension
+
+This is a [Wirechunk](https://wirechunk.com) extension created using the TypeScript extension template.
+
+See [github.com/wirechunk/extension-toolkit/tree/main/typescript](https://github.com/wirechunk/extension-toolkit/tree/main/typescript) for more information.
 
 ## Setup
 

@@ -4,9 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node --experimental-transform-types --env-file .env --env-file-if-exists .env.local --watch ./src/server/main.ts",
-    "db:init": "node --experimental-transform-types --env-file .env --env-file-if-exists .env.local ./scripts/init-db.ts",
-    "db:migrate": "npm run db:init && dotenv -c -- prisma migrate dev",
+    "dev": "node --env-file .env --env-file-if-exists .env.local --watch ./src/server/main.ts",
+    "db:init:dev": "wirechunk ext-dev init-db",
+    "db:init:test": "wirechunk --env-mode test ext-dev init-db --db-name ext_insurance_sales_lab_test",
+    "db:migrate:dev": "wirechunk ext-dev get-db-url && node --env-file .env --env-file-if-exists .env.local ./node_modules/.bin/prisma migrate dev",
+    "db:migrate:test": "npm run db:init:test && node --env-file .env --env-file-if-exists .env.test.local ./node_modules/.bin/prisma migrate dev",
     "typecheck": "tsc",
     "typecheck-src": "tsc --skipLibCheck",
     "format": "prettier --write .",
@@ -15,16 +17,17 @@
   },
   "dependencies": {
     "@fastify/formbody": "^8.0.2",
-    "@prisma/client": "^6.2.1",
+    "@prisma/client": "^6.3.1",
     "@wirechunk/extension-toolkit": "^0.0.19"
   },
   "devDependencies": {
-    "@types/node": "^22.10.10",
+    "@types/node": "^22.13.4",
     "@types/pg": "^8.11.11",
-    "pg": "^8.13.1",
-    "prettier": "^3.4.2",
-    "prisma": "^6.2.1",
+    "@wirechunk/cli": "^0.0.3",
+    "pg": "^8.13.3",
+    "prettier": "^3.5.1",
+    "prisma": "^6.3.1",
     "typescript": "^5.7.3",
-    "vitest": "^2.1.8"
+    "vitest": "^2.1.9"
   }
 }

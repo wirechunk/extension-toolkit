@@ -1,3 +1,7 @@
+import type { AfterEditUserStatusInput } from '@wirechunk/schemas/hooks/after-edit-user-status/input';
+import afterEditUserStatusInputSchema from '@wirechunk/schemas/hooks/after-edit-user-status/input.json' with { type: 'json' };
+import type { AfterEditUserStatusResult } from '@wirechunk/schemas/hooks/after-edit-user-status/result';
+import afterEditUserStatusResultSchema from '@wirechunk/schemas/hooks/after-edit-user-status/result.json' with { type: 'json' };
 import type { AuthorizeCreateSiteInput } from '@wirechunk/schemas/hooks/authorize-create-site/input';
 import authorizeCreateSiteInputSchema from '@wirechunk/schemas/hooks/authorize-create-site/input.json' with { type: 'json' };
 import type { AuthorizeCreateSiteResult } from '@wirechunk/schemas/hooks/authorize-create-site/result';
@@ -35,6 +39,7 @@ import initialFormDataInputSchema from '@wirechunk/schemas/hooks/initial-form-da
 import type { InitialFormDataResult } from '@wirechunk/schemas/hooks/initial-form-data/result';
 import initialFormDataResultSchema from '@wirechunk/schemas/hooks/initial-form-data/result.json' with { type: 'json' };
 import {
+  validateAfterEditUserStatusInput,
   validateAuthorizeCreateSiteInput,
   validateAuthorizeEditSiteInput,
   validateAuthorizeEditSiteDomainInput,
@@ -46,6 +51,40 @@ import {
   validateInitialFormDataInput,
 } from '@wirechunk/schemas/validate';
 import { server } from './start.js';
+
+/**
+ * Register a handler for the after-edit-user-status hook.
+ * This hook is fired after a user's status is changed.
+ * This hook is not used when an admin user's status is changed.
+ * This function should be called before starting the server.
+ */
+export const handleAfterEditUserStatus = (
+  handler: (
+    input: AfterEditUserStatusInput,
+  ) => Promise<AfterEditUserStatusResult | null> | AfterEditUserStatusResult | null,
+): void => {
+  server.post<{
+    Body: AfterEditUserStatusInput;
+    Reply: AfterEditUserStatusResult;
+  }>(
+    '/hooks/after-edit-user-status',
+    {
+      schema: {
+        body: afterEditUserStatusInputSchema,
+        response: { 200: afterEditUserStatusResultSchema },
+      },
+      validatorCompiler: () => validateAfterEditUserStatusInput,
+    },
+    async ({ body }, reply) => {
+      const res = await handler(body);
+      if (!res) {
+        reply.statusCode = 204;
+        return;
+      }
+      return res;
+    },
+  );
+};
 
 /**
  * Register a handler for the authorize-create-site hook.

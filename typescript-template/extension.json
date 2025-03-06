@@ -1,3 +1,10 @@
 {
-  "name": "<name>"
+  "name": "<name>",
+  "server": {
+    "enable": false,
+    "database": {
+      "enable": false
+    }
+  },
+  "components": {}
 }

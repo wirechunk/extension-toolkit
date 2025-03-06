@@ -23,7 +23,10 @@
   "devDependencies": {
     "@types/node": "^22.13.4",
     "@types/pg": "^8.11.11",
+    "@types/react": "^19.0.9",
+    "@types/react-dom": "^19.0.3",
     "@wirechunk/cli": "^0.0.3",
+    "@wirechunk/ui": "^0.1.1",
     "pg": "^8.13.3",
     "prettier": "^3.5.1",
     "prisma": "^6.3.1",

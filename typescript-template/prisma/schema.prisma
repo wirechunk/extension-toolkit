@@ -20,7 +20,7 @@ view User {
   lastName      String
   email         String    @unique
   emailVerified Boolean
-  orgId         String
+  orgId         String?
   /// One of Pending, Active, or Deactivated.
   status        String
   role          String?
@@ -55,7 +55,7 @@ view Org {
 /// This is a built-in Wirechunk view and cannot be alter or dropped.
 /// However, the extension's own tables can have Prisma relations to this view.
 view Site {
-  id        String   @id @db.Uuid
+  id        String   @id
   domain    String   @unique
   name      String
   /// The ID of the org that owns the site. If null, then the site belongs directly to the platform.

@@ -1,25 +1,25 @@
 {
   "include": ["src"],
   "compilerOptions": {
-    "target": "ES2022",
-    "lib": ["ES2022", "ES2023", "ESNext.Promise"],
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "resolveJsonModule": true,
+    "target": "ES2023",
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
     "allowJs": false,
-    "sourceMap": false,
+    "sourceMap": true,
     "esModuleInterop": true,
     "isolatedModules": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
+    "erasableSyntaxOnly": true,
     "strict": true,
     "strictNullChecks": true,
-    "noStrictGenericChecks": false,
     "noImplicitReturns": true,
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
-    "allowImportingTsExtensions": true,
-    "skipLibCheck": false,
-    "noEmit": true
-  }
+    "skipLibCheck": true,
+    "composite": true,
+    "outDir": "./build",
+    "types": []
+  },
+  "references": [{ "path": "./src/server" }, { "path": "./src/web" }]
 }

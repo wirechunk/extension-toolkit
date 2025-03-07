@@ -2,8 +2,6 @@
   "extends": "./tsconfig.json",
   "exclude": ["**/*.test.ts", "tests/**"],
   "compilerOptions": {
-    "outDir": "build",
-    "noEmit": false,
     "skipLibCheck": true,
     "rewriteRelativeImportExtensions": true,
     "declaration": true

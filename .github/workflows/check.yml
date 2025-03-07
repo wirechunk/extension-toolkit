@@ -5,37 +5,42 @@ jobs:
   typecheck:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: typescript
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: typescript/.nvmrc
+          node-version-file: .nvmrc
       - run: npm ci --ignore-scripts
-        working-directory: typescript
+      - run: npm run codegen
       - run: npm run typecheck-src
-        working-directory: typescript
   lint:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: typescript
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: typescript/.nvmrc
+          node-version-file: .nvmrc
       - run: npm ci --ignore-scripts
-        working-directory: typescript
+      - run: npm run codegen
       - run: npm run lint:check
-        working-directory: typescript
       - run: npm run format:check
-        working-directory: typescript
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: typescript
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version-file: typescript/.nvmrc
+          node-version-file: .nvmrc
       - run: npm ci --ignore-scripts
-        working-directory: typescript
+      - run: npm run codegen
       - run: npm run build
-        working-directory: typescript

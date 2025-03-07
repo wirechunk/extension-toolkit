@@ -18,7 +18,8 @@
     "provenance": true
   },
   "files": [
-    "build"
+    "build",
+    "!**/*.tsbuildinfo"
   ],
   "exports": {
     "./server": {
@@ -29,26 +30,32 @@
       "types": "./build/server/util.d.ts",
       "import": "./build/server/util.js"
     },
-    "./web/analytics-context": {
-      "types": "./build/web/analytics-context.d.ts",
-      "import": "./build/web/analytics-context.js"
+    "./web/contexts": {
+      "types": "./build/web/contexts.d.ts",
+      "import": "./build/web/contexts.js"
     }
   },
   "scripts": {
-    "typecheck": "tsc",
-    "typecheck-src": "tsc --skipLibCheck",
-    "codegen": "npm run codegen:generate && npm run format",
-    "codegen:generate": "node --experimental-transform-types scripts/codegen.ts",
+    "codegen": "npm run codegen:hooks && npm run codegen:graphql && npm run lint && npm run format",
+    "codegen:hooks": "node --experimental-transform-types scripts/codegen.ts",
+    "codegen:graphql": "graphql-codegen",
+    "typecheck": "tsc --build",
     "lint": "eslint --fix .",
     "lint:check": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "build": "npm run build:clean && npm run build:output",
     "build:clean": "rm -rf build",
-    "build:output": "tsc -p tsconfig.build.json"
+    "build:output": "tsc --build"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
+    "@graphql-codegen/cli": "^5.0.5",
+    "@graphql-codegen/fragment-matcher": "^5.1.0",
+    "@graphql-codegen/near-operation-file-preset": "^3.0.0",
+    "@graphql-codegen/typed-document-node": "^5.1.0",
+    "@graphql-codegen/typescript": "^4.1.5",
+    "@graphql-codegen/typescript-operations": "^4.5.1",
     "@types/node": "^22.10.10",
     "@types/react": "^19.0.8",
     "eslint": "^9.19.0",
@@ -56,7 +63,7 @@
     "globals": "^15.14.0",
     "prettier": "^3.4.2",
     "react": "^19.0.0",
-    "typescript": "^5.7.3",
+    "typescript": "^5.8.2",
     "typescript-eslint": "^8.21.0"
   },
   "dependencies": {

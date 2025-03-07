@@ -15,7 +15,7 @@ jobs:
           node-version-file: typescript/.nvmrc
       - run: npm ci --ignore-scripts
       - run: npm run codegen
-      - run: npm run typecheck-src
+      - run: npm run typecheck
   lint:
     runs-on: ubuntu-latest
     defaults:

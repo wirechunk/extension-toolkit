@@ -1,7 +1,6 @@
 import globals from 'globals';
 import eslintJs from '@eslint/js';
 import tsEslint from 'typescript-eslint';
-import prettier from 'eslint-config-prettier';
 
 export default [
   {
@@ -46,5 +45,4 @@ export default [
       },
     },
   },
-  prettier,
 ];

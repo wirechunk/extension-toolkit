@@ -2,5 +2,6 @@
 .yalc
 build
 node_modules
+typescript/src/web/queries/queries.generated.ts
 typescript-template/package-lock.json
 yalc.lock

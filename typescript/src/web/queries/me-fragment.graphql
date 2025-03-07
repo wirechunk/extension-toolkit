@@ -1,0 +1,29 @@
+fragment User on User {
+  id
+  email
+  emailVerified
+  firstName
+  lastName
+  displayName
+  role
+  productItems
+  orgId
+}
+
+fragment AdminUser on AdminUser {
+  id
+  email
+  emailVerified
+  firstName
+  lastName
+  displayName
+}
+
+fragment Me on Me {
+  ... on User {
+    ...User
+  }
+  ... on AdminUser {
+    ...AdminUser
+  }
+}

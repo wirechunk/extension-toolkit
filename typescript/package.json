@@ -33,6 +33,10 @@
     "./web/contexts": {
       "types": "./build/web/contexts.d.ts",
       "import": "./build/web/contexts.js"
+    },
+    "./web/queries/queries.generated": {
+      "types": "./build/web/queries/queries.generated.d.ts",
+      "import": "./build/web/queries/queries.generated.js"
     }
   },
   "scripts": {

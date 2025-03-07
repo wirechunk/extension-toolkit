@@ -1,24 +1,24 @@
 {
   "compilerOptions": {
     "target": "ES2023",
-    "lib": ["ES2021", "ES2022", "ES2023", "ESNext.Promise"],
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
     "allowJs": false,
     "sourceMap": true,
     "esModuleInterop": true,
     "isolatedModules": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
+    "typecheck-src": "tsc --skipLibCheck",
     "strict": true,
     "strictNullChecks": true,
     "noImplicitReturns": true,
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
-    "skipLibCheck": false,
-    "jsx": "react-jsx",
-    "noEmit": true
-  }
+    "skipLibCheck": true,
+    "composite": true,
+    "outDir": "./dist",
+    "types": []
+  },
+  "references": [{ "path": "./src/server" }, { "path": "./src/web" }]
 }

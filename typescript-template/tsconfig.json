@@ -9,7 +9,7 @@
     "isolatedModules": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "typecheck-src": "tsc --skipLibCheck",
+    "erasableSyntaxOnly": true,
     "strict": true,
     "strictNullChecks": true,
     "noImplicitReturns": true,

@@ -1,6 +1,6 @@
 {
   "name": "@wirechunk/extension-toolkit",
-  "version": "0.0.22",
+  "version": "0.0.23",
   "description": "Wirechunk extension toolkit",
   "type": "module",
   "repository": {
@@ -48,10 +48,10 @@
     "build:output": "tsc --build"
   },
   "devDependencies": {
-    "@eslint/js": "^9.21.0",
-    "@types/node": "^22.13.9",
+    "@eslint/js": "^9.22.0",
+    "@types/node": "^22.13.10",
     "@types/react": "^19.0.10",
-    "eslint": "^9.21.0",
+    "eslint": "^9.22.0",
     "globals": "^16.0.0",
     "prettier": "^3.5.3",
     "react": "^19.0.0",

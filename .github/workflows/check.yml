@@ -30,6 +30,20 @@ jobs:
       - run: npm run codegen
       - run: npm run lint:check
       - run: npm run format:check
+  generated_code:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: typescript
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: typescript/.nvmrc
+      - run: npm ci --ignore-scripts
+      - run: npm run codegen
+      - run: git diff --exit-code
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 5

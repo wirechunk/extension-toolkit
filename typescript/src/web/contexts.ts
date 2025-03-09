@@ -1,5 +1,4 @@
 import { createContext } from 'react';
-import type { MeFragment } from './queries/queries.generated';
 
 const noop = () => {};
 
@@ -17,9 +16,20 @@ export const AnalyticsContext = createContext<AnalyticsContext>({
   reset: noop,
 });
 
-export type CurrentUser = MeFragment;
+export type CurrentUser = {
+  __typename: 'User';
+  id: string;
+  email: string;
+  emailVerified: boolean;
+  firstName: string;
+  lastName: string;
+  displayName: string;
+  role: string;
+  productItems: string[];
+  orgId?: string | null;
+};
 
-type CurrentUserContext = {
+export type CurrentUserContext = {
   user: CurrentUser | null;
   loadingUser: boolean;
 };

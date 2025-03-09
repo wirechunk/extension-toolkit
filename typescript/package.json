@@ -30,19 +30,14 @@
       "types": "./build/server/util.d.ts",
       "import": "./build/server/util.js"
     },
-    "./web/contexts": {
-      "types": "./build/web/contexts.d.ts",
-      "import": "./build/web/contexts.js"
-    },
-    "./web/queries/queries.generated": {
-      "types": "./build/web/queries/queries.generated.d.ts",
-      "import": "./build/web/queries/queries.generated.js"
+    "./web": {
+      "types": "./build/web/main.d.ts",
+      "import": "./build/web/main.js"
     }
   },
   "scripts": {
-    "codegen": "npm run codegen:hooks && npm run codegen:graphql && npm run lint && npm run format",
-    "codegen:hooks": "node --experimental-transform-types scripts/codegen.ts",
-    "codegen:graphql": "graphql-codegen",
+    "codegen": "npm run codegen:hooks && npm run lint && npm run format",
+    "codegen:hooks": "node scripts/codegen.ts",
     "typecheck": "tsc --build",
     "lint": "eslint --fix .",
     "lint:check": "eslint .",
@@ -54,12 +49,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
-    "@graphql-codegen/cli": "^5.0.5",
-    "@graphql-codegen/fragment-matcher": "^5.1.0",
-    "@graphql-codegen/near-operation-file-preset": "^3.0.0",
-    "@graphql-codegen/typed-document-node": "^5.1.0",
-    "@graphql-codegen/typescript": "^4.1.5",
-    "@graphql-codegen/typescript-operations": "^4.5.1",
     "@types/node": "^22.13.9",
     "@types/react": "^19.0.10",
     "eslint": "^9.21.0",

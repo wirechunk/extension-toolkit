@@ -10,7 +10,6 @@
     "db:migrate:dev": "wirechunk ext-dev get-db-url && node --env-file .env --env-file-if-exists .env.local ./node_modules/.bin/prisma migrate dev",
     "db:migrate:test": "npm run db:init:test && node --env-file .env --env-file-if-exists .env.test.local ./node_modules/.bin/prisma migrate dev",
     "typecheck": "tsc",
-    "typecheck-src": "tsc --skipLibCheck",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run"
@@ -18,19 +17,19 @@
   "dependencies": {
     "@fastify/formbody": "^8.0.2",
     "@prisma/client": "^6.3.1",
-    "@wirechunk/extension-toolkit": "^0.0.19"
+    "@wirechunk/extension-toolkit": "^0.0.22"
   },
   "devDependencies": {
     "@types/node": "^22.13.4",
     "@types/pg": "^8.11.11",
     "@types/react": "^19.0.9",
     "@types/react-dom": "^19.0.3",
-    "@wirechunk/cli": "^0.0.3",
-    "@wirechunk/ui": "^0.1.1",
+    "@wirechunk/cli": "^0.0.4",
+    "@wirechunk/ui": "^0.1.2",
     "pg": "^8.13.3",
     "prettier": "^3.5.1",
     "prisma": "^6.3.1",
-    "typescript": "^5.7.3",
+    "typescript": "^5.8.2",
     "vitest": "^2.1.9"
   }
 }

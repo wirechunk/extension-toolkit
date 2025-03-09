@@ -112,6 +112,7 @@ You can import any of the following dependencies in your code and they will auto
 - `react-dom`
 - `@wirechunk/extension-toolkit/web`
 - `@wirechunk/ui`
+- `@wirechunk/apollo-client`
 - `clsx`
 
 In development, you can install these packages as `devDependencies` to have TypeScript types available.

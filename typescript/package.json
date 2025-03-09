@@ -1,6 +1,6 @@
 {
   "name": "@wirechunk/extension-toolkit",
-  "version": "0.0.22",
+  "version": "0.0.23",
   "description": "Wirechunk extension toolkit",
   "type": "module",
   "repository": {
@@ -18,7 +18,8 @@
     "provenance": true
   },
   "files": [
-    "build"
+    "build",
+    "!**/*.tsbuildinfo"
   ],
   "exports": {
     "./server": {
@@ -29,35 +30,33 @@
       "types": "./build/server/util.d.ts",
       "import": "./build/server/util.js"
     },
-    "./web/analytics-context": {
-      "types": "./build/web/analytics-context.d.ts",
-      "import": "./build/web/analytics-context.js"
+    "./web": {
+      "types": "./build/web/main.d.ts",
+      "import": "./build/web/main.js"
     }
   },
   "scripts": {
-    "typecheck": "tsc",
-    "typecheck-src": "tsc --skipLibCheck",
-    "codegen": "npm run codegen:generate && npm run format",
-    "codegen:generate": "node --experimental-transform-types scripts/codegen.ts",
+    "codegen": "npm run codegen:hooks && npm run lint && npm run format",
+    "codegen:hooks": "node scripts/codegen.ts",
+    "typecheck": "tsc --build",
     "lint": "eslint --fix .",
     "lint:check": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "build": "npm run build:clean && npm run build:output",
     "build:clean": "rm -rf build",
-    "build:output": "tsc -p tsconfig.build.json"
+    "build:output": "tsc --build"
   },
   "devDependencies": {
-    "@eslint/js": "^9.17.0",
-    "@types/node": "^22.10.10",
-    "@types/react": "^19.0.8",
-    "eslint": "^9.19.0",
-    "eslint-config-prettier": "^9.1.0",
-    "globals": "^15.14.0",
-    "prettier": "^3.4.2",
+    "@eslint/js": "^9.22.0",
+    "@types/node": "^22.13.10",
+    "@types/react": "^19.0.10",
+    "eslint": "^9.22.0",
+    "globals": "^16.0.0",
+    "prettier": "^3.5.3",
     "react": "^19.0.0",
-    "typescript": "^5.7.3",
-    "typescript-eslint": "^8.21.0"
+    "typescript": "^5.8.2",
+    "typescript-eslint": "^8.26.0"
   },
   "dependencies": {
     "@fastify/type-provider-json-schema-to-ts": "^4.0.1",

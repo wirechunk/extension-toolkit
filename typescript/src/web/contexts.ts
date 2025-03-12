@@ -1,4 +1,5 @@
 import { createContext } from 'react';
+import type { ContextData } from '@wirechunk/schemas/context-data/context-data';
 
 const noop = () => {};
 
@@ -11,6 +12,9 @@ export type AnalyticsContext = {
   reset: () => void;
 };
 
+/**
+ * An object with a general way to track analytics events.
+ */
 export const AnalyticsContext = createContext<AnalyticsContext>({
   track: noop,
   reset: noop,
@@ -31,12 +35,15 @@ export type CurrentUser = {
 
 export type CurrentUserContext = {
   user: CurrentUser | null;
-  loadingUser: boolean;
+  loading: boolean;
 };
 
+/**
+ * The current user.
+ */
 export const CurrentUserContext = createContext<CurrentUserContext>({
   user: null,
-  loadingUser: false,
+  loading: false,
 });
 
 export type SiteContext = {
@@ -47,5 +54,28 @@ export type SiteContext = {
   logoUrl?: string | null;
 };
 
+/**
+ * The current site.
+ */
 // @ts-expect-error -- Wirechunk always provides a SiteContext at the root.
 export const SiteContext = createContext<SiteContext>(null);
+
+/**
+ * The custom props provided at the page level or anywhere along the component tree.
+ */
+export const PropsContext = createContext<ContextData>({});
+
+export type ToastContext = {
+  toastError: (message: string, heading?: string) => void;
+  toastSuccess: (message: string, heading?: string) => void;
+  toastWarn: (message: string, heading?: string) => void;
+};
+
+/**
+ * A context for displaying toasts.
+ */
+export const ToastContext = createContext<ToastContext>({
+  toastError: noop,
+  toastSuccess: noop,
+  toastWarn: noop,
+});

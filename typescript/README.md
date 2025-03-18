@@ -13,11 +13,11 @@ defines its own API endpoints.
 
 ### Getting Started
 
-To build a TypeScript extension, at a minimum you need to import the `start` function from the `@wirechunk/extension-toolkit/server` package and
+To build a TypeScript extension, at a minimum you need to import the `start` function from the `@wirechunk/extension-toolkit` package and
 call it to start the server.
 
 ```
-import { start } from '@wirechunk/extension-toolkit/server';
+import { start } from '@wirechunk/extension-toolkit';
 
 await start();
 ```
@@ -29,7 +29,7 @@ All this would do is hook up a health check endpoint that Wirechunk uses to ensu
 To handle a hook, import and call the corresponding hook handler registration function:
 
 ```
-import { handleBeforeSubmitForm, start } from '@wirechunk/extension-toolkit/server';
+import { handleBeforeSubmitForm, start } from '@wirechunk/extension-toolkit';
 
 handleBeforeSubmitForm(async ({ value, context }) => {
   // Query from the database, validate input, etc.
@@ -48,7 +48,7 @@ return a value that customizes some behavior, depending on the specific hook.
 
 ### Custom API Endpoints
 
-To add custom API endpoints that you can call from your custom React components or from anywhere else, import and call the `registerApiRoutes` function from the `@wirechunk/extension-toolkit/server` package.
+To add custom API endpoints that you can call from your custom React components or from anywhere else, import and call the `registerApiRoutes` function from the `@wirechunk/extension-toolkit` package.
 
 ```
 registerApiRoutes((server) => {

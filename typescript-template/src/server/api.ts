@@ -1,4 +1,4 @@
-import { registerApiRoutes } from '@wirechunk/extension-toolkit/server';
+import { registerApiRoutes } from '@wirechunk/extension-toolkit';
 import { PrismaClient } from '@prisma/client';
 import formBody from '@fastify/formbody';
 

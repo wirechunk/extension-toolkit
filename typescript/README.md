@@ -2,6 +2,8 @@
 
 An extension may implement server-side logic and provide custom React components.
 
+This library provides support for server-side extensions.
+
 At the root of every extension’s repository, there must be an `extension.json` file with a `"name"` property.
 
 ## Building Server-Side Extensions
@@ -11,11 +13,11 @@ defines its own API endpoints.
 
 ### Getting Started
 
-To build a TypeScript extension, at a minimum you need to import the `start` function from the `@wirechunk/extension-toolkit/server` package and
+To build a TypeScript extension, at a minimum you need to import the `start` function from the `@wirechunk/extension-toolkit` package and
 call it to start the server.
 
 ```
-import { start } from '@wirechunk/extension-toolkit/server';
+import { start } from '@wirechunk/extension-toolkit';
 
 await start();
 ```
@@ -27,7 +29,7 @@ All this would do is hook up a health check endpoint that Wirechunk uses to ensu
 To handle a hook, import and call the corresponding hook handler registration function:
 
 ```
-import { handleBeforeSubmitForm, start } from '@wirechunk/extension-toolkit/server';
+import { handleBeforeSubmitForm, start } from '@wirechunk/extension-toolkit';
 
 handleBeforeSubmitForm(async ({ value, context }) => {
   // Query from the database, validate input, etc.
@@ -46,7 +48,7 @@ return a value that customizes some behavior, depending on the specific hook.
 
 ### Custom API Endpoints
 
-To add custom API endpoints that you can call from your custom React components or from anywhere else, import and call the `registerApiRoutes` function from the `@wirechunk/extension-toolkit/server` package.
+To add custom API endpoints that you can call from your custom React components or from anywhere else, import and call the `registerApiRoutes` function from the `@wirechunk/extension-toolkit` package.
 
 ```
 registerApiRoutes((server) => {
@@ -110,7 +112,6 @@ You can import any of the following dependencies in your code and they will auto
 
 - `react`
 - `react-dom`
-- `@wirechunk/extension-toolkit/web`
 - `@wirechunk/ui`
 - `@wirechunk/apollo-client`
 - `clsx`
@@ -118,4 +119,4 @@ You can import any of the following dependencies in your code and they will auto
 In development, you can install these packages as `devDependencies` to have TypeScript types available.
 
 You may install any of your own libraries and use them as usual. All components will be bundled separately with their dependencies,
-and you can import CSS files in your TypeScript files and all styles will be bundled together into a separate CSS file.
+and you can import CSS files in your TypeScript files and all styles will be bundled into a separate CSS file.

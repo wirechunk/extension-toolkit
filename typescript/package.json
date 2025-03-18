@@ -1,6 +1,6 @@
 {
   "name": "@wirechunk/extension-toolkit",
-  "version": "0.0.26",
+  "version": "0.0.27",
   "description": "Wirechunk extension toolkit",
   "type": "module",
   "repository": {
@@ -18,21 +18,16 @@
     "provenance": true
   },
   "files": [
-    "build",
-    "!**/*.tsbuildinfo"
+    "build"
   ],
   "exports": {
-    "./server": {
-      "types": "./build/server/main.d.ts",
-      "import": "./build/server/main.js"
+    ".": {
+      "types": "./build/main.d.ts",
+      "import": "./build/main.js"
     },
-    "./server/util": {
-      "types": "./build/server/util.d.ts",
-      "import": "./build/server/util.js"
-    },
-    "./web": {
-      "types": "./build/web/main.d.ts",
-      "import": "./build/web/main.js"
+    "./util": {
+      "types": "./build/util.d.ts",
+      "import": "./build/util.js"
     }
   },
   "scripts": {
@@ -45,16 +40,15 @@
     "format:check": "prettier --check .",
     "build": "npm run build:clean && npm run build:output",
     "build:clean": "rm -rf build",
-    "build:output": "tsc --build"
+    "build:output": "tsc --project tsconfig.build.json",
+    "test": "node --test"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
     "@types/node": "^22.13.10",
-    "@types/react": "^19.0.10",
     "eslint": "^9.22.0",
     "globals": "^16.0.0",
     "prettier": "^3.5.3",
-    "react": "^19.0.0",
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.26.1"
   },

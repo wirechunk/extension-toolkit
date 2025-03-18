@@ -113,7 +113,7 @@ const codegenHooks = async (hooksDirPath: string) => {
   }
 
   const fileContents = await hooksFileTemplate(hooksDirPath, hookNames);
-  await writeFile('src/server/hooks.ts', fileContents);
+  await writeFile('src/hooks.ts', fileContents);
 };
 
 await codegenHooks('node_modules/@wirechunk/schemas/src/hooks');

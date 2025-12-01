@@ -1,6 +1,6 @@
 {
   "name": "@wirechunk/extension-toolkit",
-  "version": "0.0.27",
+  "version": "0.0.28",
   "description": "Wirechunk extension toolkit",
   "type": "module",
   "repository": {
@@ -45,17 +45,17 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
-    "@types/node": "^22.13.10",
-    "eslint": "^9.22.0",
-    "globals": "^16.0.0",
-    "prettier": "^3.5.3",
-    "typescript": "^5.8.2",
-    "typescript-eslint": "^8.26.1"
+    "@types/node": "^24.10.1",
+    "eslint": "^9.39.1",
+    "globals": "^16.5.0",
+    "prettier": "^3.7.3",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.48.0"
   },
   "dependencies": {
     "@fastify/type-provider-json-schema-to-ts": "^5.0.0",
-    "@wirechunk/schemas": "0.0.22",
-    "cookie": "^1.0.2",
-    "fastify": "^5.2.1"
+    "@wirechunk/schemas": "0.0.30",
+    "cookie": "^1.1.1",
+    "fastify": "^5.6.2"
   }
 }

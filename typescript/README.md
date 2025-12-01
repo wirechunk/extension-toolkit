@@ -1,6 +1,6 @@
 # The TypeScript Toolkit for Wirechunk Extensions
 
-An extension may implement server-side logic and provide custom React components.
+A Wirechunk extension may implement server-side logic and provide custom React components.
 
 This library provides support for server-side extensions.
 
@@ -113,7 +113,6 @@ You can import any of the following dependencies in your code and they will auto
 - `react`
 - `react-dom`
 - `@wirechunk/ui`
-- `@wirechunk/apollo-client`
 - `clsx`
 
 In development, you can install these packages as `devDependencies` to have TypeScript types available.

@@ -38,19 +38,25 @@ import type { InitialFormDataInput } from '@wirechunk/schemas/hooks/initial-form
 import initialFormDataInputSchema from '@wirechunk/schemas/hooks/initial-form-data/input.json' with { type: 'json' };
 import type { InitialFormDataResult } from '@wirechunk/schemas/hooks/initial-form-data/result';
 import initialFormDataResultSchema from '@wirechunk/schemas/hooks/initial-form-data/result.json' with { type: 'json' };
-import {
-  validateAfterEditUserStatusInput,
-  validateAuthorizeCreateSiteInput,
-  validateAuthorizeEditSiteInput,
-  validateAuthorizeEditSiteDomainInput,
-  validateBeforeCreateSiteInput,
-  validateBeforeCreateUserInput,
-  validateBeforeEditSiteInput,
-  validateBeforeSubmitFormInput,
-  validateBeforeSubmitFormWebhookInput,
-  validateInitialFormDataInput,
-} from '@wirechunk/schemas/validate';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 import { server } from './start.js';
+
+type HookHandler<Body, Reply> = (input: Body) => Promise<Reply | null> | Reply | null;
+
+type HookRequest<Body, Reply> = FastifyRequest<{ Body: Body; Reply: Reply }> & {
+  body: Body;
+};
+
+const wrap =
+  <Body, Reply>(handler: HookHandler<Body, Reply>) =>
+  async ({ body }: HookRequest<Body, Reply>, reply: FastifyReply) => {
+    const res = await handler(body);
+    if (!res) {
+      reply.statusCode = 204;
+      return;
+    }
+    return res;
+  };
 
 /**
  * Register a handler for the after-edit-user-status hook.
@@ -59,9 +65,7 @@ import { server } from './start.js';
  * This function should be called before starting the server.
  */
 export const handleAfterEditUserStatus = (
-  handler: (
-    input: AfterEditUserStatusInput,
-  ) => Promise<AfterEditUserStatusResult | null> | AfterEditUserStatusResult | null,
+  handler: HookHandler<AfterEditUserStatusInput, AfterEditUserStatusResult>,
 ): void => {
   server.post<{
     Body: AfterEditUserStatusInput;
@@ -73,16 +77,8 @@ export const handleAfterEditUserStatus = (
         body: afterEditUserStatusInputSchema,
         response: { 200: afterEditUserStatusResultSchema },
       },
-      validatorCompiler: () => validateAfterEditUserStatusInput,
     },
-    async ({ body }, reply) => {
-      const res = await handler(body);
-      if (!res) {
-        reply.statusCode = 204;
-        return;
-      }
-      return res;
-    },
+    wrap(handler),
   );
 };
 
@@ -93,9 +89,7 @@ export const handleAfterEditUserStatus = (
  * This function should be called before starting the server.
  */
 export const handleAuthorizeCreateSite = (
-  handler: (
-    input: AuthorizeCreateSiteInput,
-  ) => Promise<AuthorizeCreateSiteResult | null> | AuthorizeCreateSiteResult | null,
+  handler: HookHandler<AuthorizeCreateSiteInput, AuthorizeCreateSiteResult>,
 ): void => {
   server.post<{
     Body: AuthorizeCreateSiteInput;
@@ -107,16 +101,8 @@ export const handleAuthorizeCreateSite = (
         body: authorizeCreateSiteInputSchema,
         response: { 200: authorizeCreateSiteResultSchema },
       },
-      validatorCompiler: () => validateAuthorizeCreateSiteInput,
     },
-    async ({ body }, reply) => {
-      const res = await handler(body);
-      if (!res) {
-        reply.statusCode = 204;
-        return;
-      }
-      return res;
-    },
+    wrap(handler),
   );
 };
 
@@ -128,9 +114,7 @@ export const handleAuthorizeCreateSite = (
  * This function should be called before starting the server.
  */
 export const handleAuthorizeEditSite = (
-  handler: (
-    input: AuthorizeEditSiteInput,
-  ) => Promise<AuthorizeEditSiteResult | null> | AuthorizeEditSiteResult | null,
+  handler: HookHandler<AuthorizeEditSiteInput, AuthorizeEditSiteResult>,
 ): void => {
   server.post<{
     Body: AuthorizeEditSiteInput;
@@ -142,16 +126,8 @@ export const handleAuthorizeEditSite = (
         body: authorizeEditSiteInputSchema,
         response: { 200: authorizeEditSiteResultSchema },
       },
-      validatorCompiler: () => validateAuthorizeEditSiteInput,
     },
-    async ({ body }, reply) => {
-      const res = await handler(body);
-      if (!res) {
-        reply.statusCode = 204;
-        return;
-      }
-      return res;
-    },
+    wrap(handler),
   );
 };
 
@@ -162,9 +138,7 @@ export const handleAuthorizeEditSite = (
  * This function should be called before starting the server.
  */
 export const handleAuthorizeEditSiteDomain = (
-  handler: (
-    input: AuthorizeEditSiteDomainInput,
-  ) => Promise<AuthorizeEditSiteDomainResult | null> | AuthorizeEditSiteDomainResult | null,
+  handler: HookHandler<AuthorizeEditSiteDomainInput, AuthorizeEditSiteDomainResult>,
 ): void => {
   server.post<{
     Body: AuthorizeEditSiteDomainInput;
@@ -176,16 +150,8 @@ export const handleAuthorizeEditSiteDomain = (
         body: authorizeEditSiteDomainInputSchema,
         response: { 200: authorizeEditSiteDomainResultSchema },
       },
-      validatorCompiler: () => validateAuthorizeEditSiteDomainInput,
     },
-    async ({ body }, reply) => {
-      const res = await handler(body);
-      if (!res) {
-        reply.statusCode = 204;
-        return;
-      }
-      return res;
-    },
+    wrap(handler),
   );
 };
 
@@ -195,9 +161,7 @@ export const handleAuthorizeEditSiteDomain = (
  * This function should be called before starting the server.
  */
 export const handleBeforeCreateSite = (
-  handler: (
-    input: BeforeCreateSiteInput,
-  ) => Promise<BeforeCreateSiteResult | null> | BeforeCreateSiteResult | null,
+  handler: HookHandler<BeforeCreateSiteInput, BeforeCreateSiteResult>,
 ): void => {
   server.post<{
     Body: BeforeCreateSiteInput;
@@ -209,16 +173,8 @@ export const handleBeforeCreateSite = (
         body: beforeCreateSiteInputSchema,
         response: { 200: beforeCreateSiteResultSchema },
       },
-      validatorCompiler: () => validateBeforeCreateSiteInput,
     },
-    async ({ body }, reply) => {
-      const res = await handler(body);
-      if (!res) {
-        reply.statusCode = 204;
-        return;
-      }
-      return res;
-    },
+    wrap(handler),
   );
 };
 
@@ -229,9 +185,7 @@ export const handleBeforeCreateSite = (
  * This function should be called before starting the server.
  */
 export const handleBeforeCreateUser = (
-  handler: (
-    input: BeforeCreateUserInput,
-  ) => Promise<BeforeCreateUserResult | null> | BeforeCreateUserResult | null,
+  handler: HookHandler<BeforeCreateUserInput, BeforeCreateUserResult>,
 ): void => {
   server.post<{
     Body: BeforeCreateUserInput;
@@ -243,16 +197,8 @@ export const handleBeforeCreateUser = (
         body: beforeCreateUserInputSchema,
         response: { 200: beforeCreateUserResultSchema },
       },
-      validatorCompiler: () => validateBeforeCreateUserInput,
     },
-    async ({ body }, reply) => {
-      const res = await handler(body);
-      if (!res) {
-        reply.statusCode = 204;
-        return;
-      }
-      return res;
-    },
+    wrap(handler),
   );
 };
 
@@ -262,9 +208,7 @@ export const handleBeforeCreateUser = (
  * This function should be called before starting the server.
  */
 export const handleBeforeEditSite = (
-  handler: (
-    input: BeforeEditSiteInput,
-  ) => Promise<BeforeEditSiteResult | null> | BeforeEditSiteResult | null,
+  handler: HookHandler<BeforeEditSiteInput, BeforeEditSiteResult>,
 ): void => {
   server.post<{
     Body: BeforeEditSiteInput;
@@ -276,16 +220,8 @@ export const handleBeforeEditSite = (
         body: beforeEditSiteInputSchema,
         response: { 200: beforeEditSiteResultSchema },
       },
-      validatorCompiler: () => validateBeforeEditSiteInput,
     },
-    async ({ body }, reply) => {
-      const res = await handler(body);
-      if (!res) {
-        reply.statusCode = 204;
-        return;
-      }
-      return res;
-    },
+    wrap(handler),
   );
 };
 
@@ -295,9 +231,7 @@ export const handleBeforeEditSite = (
  * This function should be called before starting the server.
  */
 export const handleBeforeSubmitForm = (
-  handler: (
-    input: BeforeSubmitFormInput,
-  ) => Promise<BeforeSubmitFormResult | null> | BeforeSubmitFormResult | null,
+  handler: HookHandler<BeforeSubmitFormInput, BeforeSubmitFormResult>,
 ): void => {
   server.post<{
     Body: BeforeSubmitFormInput;
@@ -309,16 +243,8 @@ export const handleBeforeSubmitForm = (
         body: beforeSubmitFormInputSchema,
         response: { 200: beforeSubmitFormResultSchema },
       },
-      validatorCompiler: () => validateBeforeSubmitFormInput,
     },
-    async ({ body }, reply) => {
-      const res = await handler(body);
-      if (!res) {
-        reply.statusCode = 204;
-        return;
-      }
-      return res;
-    },
+    wrap(handler),
   );
 };
 
@@ -330,9 +256,7 @@ export const handleBeforeSubmitForm = (
  * This function should be called before starting the server.
  */
 export const handleBeforeSubmitFormWebhook = (
-  handler: (
-    input: BeforeSubmitFormWebhookInput,
-  ) => Promise<BeforeSubmitFormWebhookResult | null> | BeforeSubmitFormWebhookResult | null,
+  handler: HookHandler<BeforeSubmitFormWebhookInput, BeforeSubmitFormWebhookResult>,
 ): void => {
   server.post<{
     Body: BeforeSubmitFormWebhookInput;
@@ -344,16 +268,8 @@ export const handleBeforeSubmitFormWebhook = (
         body: beforeSubmitFormWebhookInputSchema,
         response: { 200: beforeSubmitFormWebhookResultSchema },
       },
-      validatorCompiler: () => validateBeforeSubmitFormWebhookInput,
     },
-    async ({ body }, reply) => {
-      const res = await handler(body);
-      if (!res) {
-        reply.statusCode = 204;
-        return;
-      }
-      return res;
-    },
+    wrap(handler),
   );
 };
 
@@ -364,9 +280,7 @@ export const handleBeforeSubmitFormWebhook = (
  * This function should be called before starting the server.
  */
 export const handleInitialFormData = (
-  handler: (
-    input: InitialFormDataInput,
-  ) => Promise<InitialFormDataResult | null> | InitialFormDataResult | null,
+  handler: HookHandler<InitialFormDataInput, InitialFormDataResult>,
 ): void => {
   server.post<{
     Body: InitialFormDataInput;
@@ -378,15 +292,7 @@ export const handleInitialFormData = (
         body: initialFormDataInputSchema,
         response: { 200: initialFormDataResultSchema },
       },
-      validatorCompiler: () => validateInitialFormDataInput,
     },
-    async ({ body }, reply) => {
-      const res = await handler(body);
-      if (!res) {
-        reply.statusCode = 204;
-        return;
-      }
-      return res;
-    },
+    wrap(handler),
   );
 };

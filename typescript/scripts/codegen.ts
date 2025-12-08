@@ -1,4 +1,5 @@
 import { lstat, readdir, readFile, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { existsSync } from 'node:fs';
 
 const kebabToPascal = (kebab) =>
@@ -53,7 +54,7 @@ import ${resultSchema} from '@wirechunk/schemas/hooks/${hookName}/result.json' w
  * This function should be called before starting the server.
  */
 export const handle${hookNamePascal} = (
-  handler: (input: ${inputType}) => Promise<${resultType} | null> | ${resultType} | null,
+  handler: HookHandler<${inputType}, ${resultType}>,
 ): void => {
   server.post<{
     Body: ${inputType};
@@ -65,16 +66,8 @@ export const handle${hookNamePascal} = (
         body: ${inputSchema},
         response: { 200: ${resultSchema} },
       },
-      validatorCompiler: () => validate${inputType},
     },
-    async ({ body }, reply) => {
-      const res = await handler(body);
-      if (!res) {
-        reply.statusCode = 204;
-        return;
-      }
-      return res;
-    },
+    wrap(handler),
   );
 };`;
 
@@ -91,9 +84,25 @@ const hooksFileTemplate = async (hooksDirPath, hookNames) => {
   );
 
   return `${templates.map((t) => t.imports).join('\n')}
-import {
-  ${templates.map((template) => `validate${template.inputType}`).join(',')} } from '@wirechunk/schemas/validate';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 import { server } from './start.js';
+
+type HookHandler<Body, Reply> = (input: Body) => Promise<Reply | null> | Reply | null;
+
+type HookRequest<Body, Reply> = FastifyRequest<{ Body: Body; Reply: Reply }> & {
+  body: Body;
+};
+
+const wrap =
+  <Body, Reply>(handler: HookHandler<Body, Reply>) =>
+  async ({ body }: HookRequest<Body, Reply>, reply: FastifyReply) => {
+    const res = await handler(body);
+    if (!res) {
+      reply.statusCode = 204;
+      return;
+    }
+    return res;
+  };
 
 ${templates.map((t) => t.handleFn).join('\n\n')}
 `;
@@ -101,7 +110,7 @@ ${templates.map((t) => t.handleFn).join('\n\n')}
 
 const codegenHooks = async (hooksDirPath: string) => {
   const files = await readdir(hooksDirPath);
-  const hookNames = [];
+  const hookNames: string[] = [];
   for (const file of files) {
     const filePath = `${hooksDirPath}/${file}`;
     const stat = await lstat(filePath);
@@ -116,4 +125,130 @@ const codegenHooks = async (hooksDirPath: string) => {
   await writeFile('src/hooks.ts', fileContents);
 };
 
+const schemaVarName = (hookName: string, schemaName: string) =>
+  `${kebabToCamel(hookName)}${kebabToPascal(schemaName)}Schema`;
+
+type SchemaImport = { varName: string; importPath: string };
+
+const collectJsonFiles = async (dir: string): Promise<string[]> => {
+  const entries = await readdir(dir, { withFileTypes: true });
+  const files: string[] = [];
+  for (const entry of entries) {
+    const entryPath = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...(await collectJsonFiles(entryPath)));
+    } else if (entry.isFile() && entry.name.endsWith('.json')) {
+      files.push(entryPath);
+    }
+  }
+  return files;
+};
+
+const toImportPath = (absPath: string, schemasRoot: string) =>
+  `@wirechunk/schemas/${absPath.slice(schemasRoot.length + 1).replace(/\\/g, '/')}`;
+
+const toExtraSchemaVarName = (relativePath: string) => {
+  const withoutExt = relativePath.replace(/\.json$/, '');
+  const parts = withoutExt
+    .split(/[\\/]/)
+    .flatMap((segment) => segment.split(/[^a-zA-Z0-9]+/))
+    .filter(Boolean);
+  if (parts.length === 0) return 'schema';
+  const [first, ...rest] = parts;
+  return `${first}${rest.map((p) => p[0].toUpperCase() + p.slice(1)).join('')}Schema`;
+};
+
+const schemasFileTemplate = async (hooksDirPath: string, hookNames: string[]) => {
+  const imports: SchemaImport[] = [];
+  const importsSeen = new Set<string>();
+  const schemasRoot = join(hooksDirPath, '..');
+
+  for (const hookName of hookNames.sort()) {
+    const hookDirPath = join(hooksDirPath, hookName);
+    const files = await readdir(hookDirPath);
+    for (const fileName of files.sort()) {
+      if (!fileName.endsWith('.json')) continue;
+      const schemaName = fileName.replace(/\.json$/, '');
+      const importPath = `@wirechunk/schemas/hooks/${hookName}/${fileName}`;
+      if (importsSeen.has(importPath)) continue;
+      importsSeen.add(importPath);
+      imports.push({
+        varName: schemaVarName(hookName, schemaName),
+        importPath,
+      });
+    }
+  }
+
+  const extraDirs = ['request-context'];
+  for (const extra of extraDirs) {
+    const extraDirPath = join(schemasRoot, extra);
+    if (!existsSync(extraDirPath)) continue;
+    const files = await collectJsonFiles(extraDirPath);
+    for (const absPath of files.sort()) {
+      const importPath = toImportPath(absPath, schemasRoot);
+      if (importsSeen.has(importPath)) continue;
+      importsSeen.add(importPath);
+      const relativePath = absPath.slice(schemasRoot.length + 1);
+      imports.push({
+        varName: toExtraSchemaVarName(relativePath),
+        importPath,
+      });
+    }
+  }
+
+  const schemaEntries = imports
+    .map(
+      ({ varName, importPath }) =>
+        `  { schema: ${varName}, key: '${importPath.replace(/'/g, "\\'")}' },`,
+    )
+    .join('\n');
+
+  return `${imports
+    .map(
+      ({ varName, importPath }) => `import ${varName} from '${importPath}' with { type: 'json' };`,
+    )
+    .join('\n')}
+import type { AnySchema } from 'ajv';
+
+type SchemaEntry = { schema: AnySchema; key: string };
+
+const schemas: SchemaEntry[] = [
+${schemaEntries}
+];
+
+type AjvSchemaRegistrar = { addSchema: (schema: AnySchema, key?: string) => unknown };
+
+export const registerSchemas = (ajv: AjvSchemaRegistrar): void => {
+  const seen = new Set<string>();
+  schemas.forEach(({ schema, key }) => {
+    const idFromSchema = typeof schema === 'boolean' ? undefined : schema.$id;
+    const id = typeof idFromSchema === 'string' && idFromSchema.length > 0 ? idFromSchema : key;
+    if (seen.has(id)) {
+      return;
+    }
+    seen.add(id);
+    ajv.addSchema(schema, id);
+  });
+};
+`;
+};
+
+const codegenSchemas = async (hooksDirPath: string) => {
+  const files = await readdir(hooksDirPath);
+  const hookNames: string[] = [];
+  for (const file of files) {
+    const filePath = `${hooksDirPath}/${file}`;
+    const stat = await lstat(filePath);
+    if (stat.isDirectory()) {
+      hookNames.push(file);
+    } else {
+      console.error(`Unexpected file in the hooks directory: ${filePath}`);
+    }
+  }
+
+  const schemasContents = await schemasFileTemplate(hooksDirPath, hookNames);
+  await writeFile('src/schemas.ts', schemasContents);
+};
+
 await codegenHooks('node_modules/@wirechunk/schemas/src/hooks');
+await codegenSchemas('node_modules/@wirechunk/schemas/src/hooks');

@@ -1,10 +1,13 @@
 import process from 'node:process';
+import type { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts';
 import type { FastifyBaseLogger, FastifyInstance, RawServerDefault } from 'fastify';
 import fastify from 'fastify';
-import type { IncomingMessage, ServerResponse } from 'node:http';
+import { Ajv2020 } from 'ajv/dist/2020.js';
+import addFormats from 'ajv-formats';
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
-import type { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts';
+import type { IncomingMessage, ServerResponse } from 'node:http';
+import { registerSchemas } from './schemas.js';
 
 const port = process.env.PORT;
 if (!port) {
@@ -54,6 +57,13 @@ if (typeof extensionName !== 'string') {
 export const server = fastify({
   logger: true,
 }).withTypeProvider<JsonSchemaToTsProvider>();
+
+const ajv = new Ajv2020({ strict: false, allErrors: true });
+// @ts-expect-error - addFormats is not typed correctly.
+addFormats(ajv);
+registerSchemas(ajv);
+
+server.setValidatorCompiler(({ schema }) => ajv.compile(schema));
 
 // No validation on serializing because the client should validate.
 server.setSerializerCompiler(() => (data) => JSON.stringify(data));

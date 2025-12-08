@@ -1,0 +1,19 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "lint",
+      "path": "typescript",
+      "problemMatcher": ["$eslint-stylish"],
+      "label": "lint - typescript"
+    },
+    {
+      "type": "npm",
+      "script": "typecheck",
+      "path": "typescript",
+      "problemMatcher": ["$tsc"],
+      "label": "typecheck - typescript"
+    }
+  ]
+}

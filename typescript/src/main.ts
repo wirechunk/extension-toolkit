@@ -1,2 +1,2 @@
 export * from './hooks.ts';
-export { registerApiRoutes, setHealthCheck, start } from './start.ts';
+export { registerApiRoutes, setHealthCheck, server, start } from './start.ts';

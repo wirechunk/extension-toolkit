@@ -1,6 +1,6 @@
 {
   "name": "@wirechunk/extension-toolkit",
-  "version": "0.0.28",
+  "version": "0.0.29",
   "description": "Wirechunk extension toolkit",
   "type": "module",
   "repository": {
@@ -12,7 +12,7 @@
   "bugs": {
     "url": "https://github.com/wirechunk/extension-toolkit/issues"
   },
-  "homepage": "https://github.com/wirechunk/extension-toolkit#readme",
+  "homepage": "https://github.com/wirechunk/extension-toolkit/blob/main/typescript/README.md",
   "publishConfig": {
     "access": "public",
     "provenance": true
@@ -48,9 +48,9 @@
     "@types/node": "^24.10.1",
     "eslint": "^9.39.1",
     "globals": "^16.5.0",
-    "prettier": "^3.7.3",
+    "prettier": "^3.7.4",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.48.0"
+    "typescript-eslint": "^8.48.1"
   },
   "dependencies": {
     "@fastify/type-provider-json-schema-to-ts": "^5.0.0",

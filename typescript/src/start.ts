@@ -1,6 +1,7 @@
 import process from 'node:process';
 import type { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts';
 import type { FastifyBaseLogger, FastifyInstance, RawServerDefault } from 'fastify';
+import type { AnySchema } from 'ajv';
 import fastify from 'fastify';
 import { Ajv2020 } from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
@@ -59,18 +60,66 @@ export const server = fastify({
 }).withTypeProvider<JsonSchemaToTsProvider>();
 
 const ajv = new Ajv2020({ strict: false, allErrors: true });
+const schemasById = new Map<string, unknown>();
 // @ts-expect-error - addFormats is not typed correctly.
 addFormats(ajv);
 
-schemas.forEach((schema) => {
-  ajv.addSchema(schema, schema.$id);
-  server.addSchema(schema);
+const addSchemaToAjv = (schema: unknown) => {
+  const schemaId = (schema as { $id?: unknown }).$id;
+  if (typeof schemaId === 'string' && schemasById.has(schemaId)) {
+    return server;
+  }
+  ajv.addSchema(schema as AnySchema);
+  if (typeof schemaId === 'string') {
+    schemasById.set(schemaId, schema);
+  }
+  return server;
+};
+
+server.setSchemaController({
+  bucket(parentSchemas?: unknown) {
+    if (parentSchemas && typeof parentSchemas === 'object') {
+      if (Array.isArray(parentSchemas)) {
+        parentSchemas.forEach((schema) => {
+          addSchemaToAjv(schema);
+        });
+      } else {
+        Object.values(parentSchemas as Record<string, unknown>).forEach((schema) => {
+          addSchemaToAjv(schema);
+        });
+      }
+    }
+    return {
+      add: (schema: unknown) => addSchemaToAjv(schema),
+      getSchema: (schemaId: string) => schemasById.get(schemaId) ?? ajv.getSchema(schemaId)?.schema,
+      getSchemas: () => Object.fromEntries(schemasById),
+    };
+  },
+  compilersFactory: {
+    buildValidator: (externalSchemas: Record<string, AnySchema | AnySchema[]> = {}) => {
+      Object.values(externalSchemas).forEach((schema) => {
+        if (Array.isArray(schema)) {
+          schema.forEach((entry) => {
+            addSchemaToAjv(entry);
+          });
+        } else {
+          addSchemaToAjv(schema);
+        }
+      });
+      return (routeSchema: AnySchema | { schema: AnySchema }) => {
+        const targetSchema =
+          routeSchema && typeof routeSchema === 'object' && 'schema' in routeSchema
+            ? (routeSchema as { schema: AnySchema }).schema
+            : routeSchema;
+        return ajv.compile(targetSchema);
+      };
+    },
+  },
 });
 
-server.setValidatorCompiler(({ schema }) => ajv.compile(schema));
-
-// No validation on serializing because the client should validate.
-server.setSerializerCompiler(() => (data) => JSON.stringify(data));
+schemas.forEach((schema) => {
+  server.addSchema(schema);
+});
 
 let healthCheck: () => 'OK' | Promise<'OK'> = () => 'OK';
 

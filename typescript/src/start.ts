@@ -7,7 +7,7 @@ import addFormats from 'ajv-formats';
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import { registerSchemas } from './schemas.js';
+import { schemas } from './schemas.js';
 
 const port = process.env.PORT;
 if (!port) {
@@ -61,7 +61,11 @@ export const server = fastify({
 const ajv = new Ajv2020({ strict: false, allErrors: true });
 // @ts-expect-error - addFormats is not typed correctly.
 addFormats(ajv);
-registerSchemas(ajv);
+
+schemas.forEach((schema) => {
+  ajv.addSchema(schema, schema.$id);
+  server.addSchema(schema);
+});
 
 server.setValidatorCompiler(({ schema }) => ajv.compile(schema));
 

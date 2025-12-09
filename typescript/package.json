@@ -49,12 +49,13 @@
     "eslint": "^9.39.1",
     "globals": "^16.5.0",
     "prettier": "^3.7.4",
+    "type-fest": "^5.3.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.48.1"
   },
   "dependencies": {
     "@fastify/type-provider-json-schema-to-ts": "^5.0.0",
-    "@wirechunk/schemas": "0.0.30",
+    "@wirechunk/schemas": "0.0.31",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
     "cookie": "^1.1.1",

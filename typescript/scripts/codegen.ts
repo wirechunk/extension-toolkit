@@ -28,9 +28,9 @@ const hookHandlerTemplate = async (hooksDirPath, hookName): Promise<HookHandlerT
   const inputSchema = `${hookNameCamel}InputSchema`;
   const resultSchema = `${hookNameCamel}ResultSchema`;
 
-  const imports = `import type { ${inputType} } from '@wirechunk/schemas/hooks/${hookName}/input';
+  const imports = `import type { ${inputType} } from '@wirechunk/schemas/hooks/${hookName}/input.d.ts';
 import ${inputSchema} from '@wirechunk/schemas/hooks/${hookName}/input.json' with { type: 'json' };
-import type { ${resultType} } from '@wirechunk/schemas/hooks/${hookName}/result';
+import type { ${resultType} } from '@wirechunk/schemas/hooks/${hookName}/result.d.ts';
 import ${resultSchema} from '@wirechunk/schemas/hooks/${hookName}/result.json' with { type: 'json' };`;
 
   let description: string | undefined;
@@ -168,6 +168,7 @@ const schemasFileTemplate = async (hooksDirPath: string, hookNames: string[]) =>
     const files = await readdir(hookDirPath);
     for (const fileName of files.sort()) {
       if (!fileName.endsWith('.json')) continue;
+      if (fileName === 'properties.json') continue;
       const schemaName = fileName.replace(/\.json$/, '');
       const importPath = `@wirechunk/schemas/hooks/${hookName}/${fileName}`;
       if (importsSeen.has(importPath)) continue;
@@ -179,12 +180,20 @@ const schemasFileTemplate = async (hooksDirPath: string, hookNames: string[]) =>
     }
   }
 
-  const extraDirs = ['request-context'];
+  const extraDirs = [
+    'request-context',
+    'hook-reject-result',
+    'expressions',
+    'context-data',
+    'authorize-hook-result',
+    'custom-field',
+  ];
   for (const extra of extraDirs) {
     const extraDirPath = join(schemasRoot, extra);
     if (!existsSync(extraDirPath)) continue;
     const files = await collectJsonFiles(extraDirPath);
     for (const absPath of files.sort()) {
+      if (absPath.endsWith('/properties.json')) continue;
       const importPath = toImportPath(absPath, schemasRoot);
       if (importsSeen.has(importPath)) continue;
       importsSeen.add(importPath);
@@ -196,40 +205,17 @@ const schemasFileTemplate = async (hooksDirPath: string, hookNames: string[]) =>
     }
   }
 
-  const schemaEntries = imports
-    .map(
-      ({ varName, importPath }) =>
-        `  { schema: ${varName}, key: '${importPath.replace(/'/g, "\\'")}' },`,
-    )
-    .join('\n');
-
   return `${imports
     .map(
       ({ varName, importPath }) => `import ${varName} from '${importPath}' with { type: 'json' };`,
     )
     .join('\n')}
-import type { AnySchema } from 'ajv';
+import type { SchemaObject } from 'ajv';
+import type { SetRequired } from 'type-fest';
 
-type SchemaEntry = { schema: AnySchema; key: string };
-
-const schemas: SchemaEntry[] = [
-${schemaEntries}
+export const schemas: Array<SetRequired<SchemaObject, '$id'>> = [
+${imports.map(({ varName }) => `  ${varName},`).join('\n')}
 ];
-
-type AjvSchemaRegistrar = { addSchema: (schema: AnySchema, key?: string) => unknown };
-
-export const registerSchemas = (ajv: AjvSchemaRegistrar): void => {
-  const seen = new Set<string>();
-  schemas.forEach(({ schema, key }) => {
-    const idFromSchema = typeof schema === 'boolean' ? undefined : schema.$id;
-    const id = typeof idFromSchema === 'string' && idFromSchema.length > 0 ? idFromSchema : key;
-    if (seen.has(id)) {
-      return;
-    }
-    seen.add(id);
-    ajv.addSchema(schema, id);
-  });
-};
 `;
 };
 

@@ -211,9 +211,8 @@ const schemasFileTemplate = async (hooksDirPath: string, hookNames: string[]) =>
     )
     .join('\n')}
 import type { SchemaObject } from 'ajv';
-import type { SetRequired } from 'type-fest';
 
-export const schemas: Array<SetRequired<SchemaObject, '$id'>> = [
+export const schemas: SchemaObject[] = [
 ${imports.map(({ varName }) => `  ${varName},`).join('\n')}
 ];
 `;

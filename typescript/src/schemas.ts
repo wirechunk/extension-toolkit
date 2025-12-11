@@ -47,9 +47,8 @@ import authorizeHookResultAuthorizeHookResultSchema from '@wirechunk/schemas/aut
 import customFieldCustomFieldSchema from '@wirechunk/schemas/custom-field/custom-field.json' with { type: 'json' };
 import customFieldRichTextSchema from '@wirechunk/schemas/custom-field/rich-text.json' with { type: 'json' };
 import type { SchemaObject } from 'ajv';
-import type { SetRequired } from 'type-fest';
 
-export const schemas: Array<SetRequired<SchemaObject, '$id'>> = [
+export const schemas: SchemaObject[] = [
   afterEditUserStatusContextSchema,
   afterEditUserStatusInputSchema,
   afterEditUserStatusResultSchema,
